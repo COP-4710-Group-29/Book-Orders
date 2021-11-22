@@ -1,0 +1,50 @@
+body {
+  background-color: #FAFAFA !important;
+}
+
+.order_card
+{
+  margin: 5px 0px;
+}
+
+.breadcrumb
+{
+  background-color: #FAFAFA;
+}
+
+/* Navigation bar colors */
+.navbar-custom {
+  background-color: #FFFFFF;
+}
+
+/* Brand or plain text */
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text {
+  color: #263C55;
+}
+
+/* Nav links */
+.navbar-custom .navbar-nav .nav-link {
+  color: #263C55;
+}
+
+/* Active or hovered links */
+.navbar-custom .nav-item.active .nav-link,
+.navbar-custom .nav-item:hover .nav-link {
+  color: #2595D5;
+}
+
+/* Change the color of dropdown */
+.navbar-custom .dropdown-menu {
+  background-color: #FFFFFF;
+}
+
+.navbar-custom .dropdown-item {
+  color: #263C55;
+}
+
+.navbar-custom .dropdown-item:hover,
+.navbar-custom .dropdown-item:focus {
+  color: #FFFFFF;
+  background-color: #2595D5;
+}

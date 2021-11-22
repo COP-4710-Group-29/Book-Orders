@@ -1,0 +1,159 @@
+<html lang="en">
+<head>
+  <title>Your Courses</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <link rel="stylesheet" href="/css/stylesheet.css">
+  <script src="/js/global.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-light navbar-expand-md navbar-custom">
+    <a class="navbar-brand" href="/">UCF Bookstore Online</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/orders">Your Orders</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/courses">Your Courses</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="" id="navbardrop" data-toggle="dropdown">
+            My Account
+          </a>
+
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/profile">My Profile</a>
+            <a class="dropdown-item" href="/logout">Sign Out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class="row">
+          <div class="col-md-10">
+            <h3>Your Courses</h3>
+          </div>
+          <div class="col-md-2">
+            <div class="justify-content-center">
+              <a href="/courses/create" class="btn btn-primary">New Course</a>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row" id="course_container">
+
+          <!--<div class="col-md-4">
+            <div class="card order_card" id="(course_id)">
+              <div class="card-header">
+                <span class="float-left">(course_code)</span>
+                <span class="float-right">
+                  <a onclick="edit_course(course_id)" style="margin: 0px 4px;" class='fas fa-pen'></a>
+                  <a onclick="delete_course(course_id)" style="margin: 0px 4px;" class='fas fa-trash'></a>
+                </span>
+              </div>
+              <div class="card-body">
+                <p class="card-text">(semester_name)</p>
+              </div>
+            </div>
+          </div>-->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal fade" id="edit_course_modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Edit <span id="course_code_display"></span></h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <form id="edit_course_form" role="form">
+            <div class="form-group row">
+              <label for="course_name" class="col-md-4 col-form-label text-md-right">Name:</label>
+              <div class="col-md-6">
+                <input type="text" id="course_name" class="form-control" name="course_name" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="course_code" class="col-md-4 col-form-label text-md-right">Course Code:</label>
+              <div class="col-md-6">
+                <input type="text" id="course_code" class="form-control" name="course_code" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="isbn" class="col-md-4 col-form-label text-md-right">Semester:</label>
+              <div class="col-md-6">
+                <select class="form-control" id="semester_id"></select>
+              </div>
+            </div>
+
+            <div class="col-md-6 offset-md-4">
+              <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+  $(document).ready(function()
+  {
+    redirecter();
+  });
+
+  function redirecter()
+  {
+    var uid_set = sessionStorage.getItem("uid");;
+    if (uid_set == null)
+      window.location.replace("/login");
+  }
+
+  function edit_course(course_id)
+  {
+    $('#edit_course_modal').modal('show');
+  }
+
+  function delete_course(course_id)
+  {
+
+  }
+  </script>
+</body>
+</html>

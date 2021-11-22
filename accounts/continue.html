@@ -1,0 +1,62 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/stylesheet.css">
+  <script src="/js/global.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-light navbar-expand-md navbar-custom">
+    <a class="navbar-brand" href="/">UCF Bookstore Online</a>
+  </nav>
+
+  <div style="padding-top: 50px;" class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header"><b>Enter Code</b><a href="/" class="float-right"><b>X</b></a></div>
+          <div class="card-body">
+            <p class="card-text">We sent a code to $email. Enter the code here to continue.</p>
+            <form action="" method="">
+              <div class="form-group row">
+                <label for="recovery_code" class="col-md-4 col-form-label text-md-right">Code</label>
+                <div class="col-md-6">
+                  <input type="number" id="recovery_code" class="form-control" name="recovery_code" required autofocus>
+                </div>
+              </div>
+
+              <div class="col-md-6 offset-md-4">
+                <button type="submit" class="btn btn-primary">Continue</button>
+                <a href="" class="btn btn-link">Resend code</a>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  $(document).ready(function()
+  {
+    redirecter();
+  });
+
+  function redirecter()
+  {
+    var uid_set = sessionStorage.getItem("uid");;
+    if (uid_set != null)
+      window.location.replace("/dashboard");
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<html lang="en">
+<head>
+  <title>View Order</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/stylesheet.css">
+  <script src="/js/global.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-light navbar-expand-md navbar-custom">
+    <a class="navbar-brand" href="/">UCF Bookstore Online</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/orders">Your Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/courses">Your Courses</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="" id="navbardrop" data-toggle="dropdown">
+            My Account
+          </a>
+
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/profile">My Profile</a>
+            <a class="dropdown-item" href="/logout">Sign Out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class="row">
+          <div class="col-md-7">
+            <h3>(course_name)</h3>
+            <h5>Order number: (order_id)</h5>
+            <p class="card-text">Status: <span class="badge badge-success">Completed</span></p>
+          </div>
+          <div class="col-md-5">
+            <div class="card order_card" id="(book_id)">
+              <div class="card-header bg-info text-white">Archived Order</div>
+              <div class="card-body">
+                <p class="card-text">You are viewing a completed order. Changes may no longer be made.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row" id="order-container">
+
+          <div class="col-md-4">
+            <div class="card order_card" id="(book_id)">
+              <div class="card-header">(book_title)</div>
+              <div class="card-body">
+                <p class="card-text">(author)</p>
+                <p class="card-text">Edition: (edition)</p>
+                <p class="card-text">Publisher: (publisher)</p>
+                <p class="card-text">ISBN: (isbn)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card order_card" id="(book_id)">
+              <div class="card-header">(book_title)</div>
+              <div class="card-body">
+                <p class="card-text">(author)</p>
+                <p class="card-text">Edition: (edition)</p>
+                <p class="card-text">Publisher: (publisher)</p>
+                <p class="card-text">ISBN: (isbn)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card order_card" id="(book_id)">
+              <div class="card-header">(book_title)</div>
+              <div class="card-body">
+                <p class="card-text">(author)</p>
+                <p class="card-text">Edition: (edition)</p>
+                <p class="card-text">Publisher: (publisher)</p>
+                <p class="card-text">ISBN: (isbn)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card order_card" id="(book_id)">
+              <div class="card-header">(book_title)</div>
+              <div class="card-body">
+                <p class="card-text">(author)</p>
+                <p class="card-text">Edition: (edition)</p>
+                <p class="card-text">Publisher: (publisher)</p>
+                <p class="card-text">ISBN: (isbn)</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+  $(document).ready(function()
+  {
+    redirecter();
+  });
+
+  function redirecter()
+  {
+    var uid_set = sessionStorage.getItem("uid");;
+    if (uid_set == null)
+      window.location.replace("/login");
+  }
+  </script>
+</body>
+</html>

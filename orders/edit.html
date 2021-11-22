@@ -1,0 +1,231 @@
+<html lang="en">
+<head>
+  <title>Edit Order</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <link rel="stylesheet" href="/css/stylesheet.css">
+  <script src="/js/global.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-light navbar-expand-md navbar-custom">
+    <a class="navbar-brand" href="/">UCF Bookstore Online</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/orders">Your Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/courses">Your Courses</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="" id="navbardrop" data-toggle="dropdown">
+            My Account
+          </a>
+
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="/profile">My Profile</a>
+            <a class="dropdown-item" href="/logout">Sign Out</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h3>(course_name)</h3>
+        <h5>Order number: (order_id)</h5>
+        <p class="card-text">Status: <span class="badge badge-info">Recieved</span></p>
+
+        <hr>
+
+        <div class="row" id="order-container">
+
+          <div class="col-md-4">
+            <div class="card order_card" id="(book_id)">
+              <div class="card-header">
+                <span class="float-left">(book_title)</span>
+                <span class="float-right">
+                  <a onclick="edit_book(1001)" style="margin: 0px 4px;" class='fas fa-pen'></a>
+                  <a onclick="delete_book(1001)" style="margin: 0px 4px;" class='fas fa-trash'></a>
+                </span>
+              </div>
+              <div class="card-body">
+                <p class="card-text">(author)</p>
+                <p class="card-text">Edition: (edition)</p>
+                <p class="card-text">Publisher: (publisher)</p>
+                <p class="card-text">ISBN: (isbn)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card order_card" id="(book_id)">
+              <div class="card-header">
+                <span class="float-left">(book_title)</span>
+                <span class="float-right">
+                  <a onclick="edit_book(book_id)" style="margin: 0px 4px;" class='fas fa-pen'></a>
+                  <a onclick="delete_book(book_id)" style="margin: 0px 4px;" class='fas fa-trash'></a>
+                </span>
+              </div>
+              <div class="card-body">
+                <p class="card-text">(author)</p>
+                <p class="card-text">Edition: (edition)</p>
+                <p class="card-text">Publisher: (publisher)</p>
+                <p class="card-text">ISBN: (isbn)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card order_card" id="(book_id)">
+              <div class="card-header">
+                <span class="float-left">(book_title)</span>
+                <span class="float-right">
+                  <a onclick="edit_book(book_id)" style="margin: 0px 4px;" class='fas fa-pen'></a>
+                  <a onclick="delete_book(book_id)" style="margin: 0px 4px;" class='fas fa-trash'></a>
+                </span>
+              </div>
+              <div class="card-body">
+                <p class="card-text">(author)</p>
+                <p class="card-text">Edition: (edition)</p>
+                <p class="card-text">Publisher: (publisher)</p>
+                <p class="card-text">ISBN: (isbn)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card order_card" id="(book_id)">
+              <div class="card-header">
+                <span class="float-left">(book_title)</span>
+                <span class="float-right">
+                  <a onclick="edit_book(book_id)" style="margin: 0px 4px;" class='fas fa-pen'></a>
+                  <a onclick="delete_book(book_id)" style="margin: 0px 4px;" class='fas fa-trash'></a>
+                </span>
+              </div>
+              <div class="card-body">
+                <p class="card-text">(author)</p>
+                <p class="card-text">Edition: (edition)</p>
+                <p class="card-text">Publisher: (publisher)</p>
+                <p class="card-text">ISBN: (isbn)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card order_card">
+              <div class="card-header">Add Another Book?</div>
+              <div class="card-body">
+                <a href="" class="btn btn-primary">Add a new book</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal fade" id="edit_book_modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Edit (book_title)</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <form id="edit_book_form" action="" method="">
+            <div class="form-group row">
+              <label for="title" class="col-md-4 col-form-label text-md-right">Title:</label>
+              <div class="col-md-6">
+                <input type="text" id="title" class="form-control" name="title" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="title" class="col-md-4 col-form-label text-md-right">Author:</label>
+              <div class="col-md-6">
+                <input type="text" id="title" class="form-control" name="title" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="edition" class="col-md-4 col-form-label text-md-right">Edition:</label>
+              <div class="col-md-6">
+                <input type="text" id="edition" class="form-control" name="edition" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="publisher" class="col-md-4 col-form-label text-md-right">Publisher:</label>
+              <div class="col-md-6">
+                <input type="text" id="publisher" class="form-control" name="publisher" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="isbn" class="col-md-4 col-form-label text-md-right">ISBN:</label>
+              <div class="col-md-6">
+                <input type="text" id="isbn" class="form-control" name="isbn" required>
+              </div>
+            </div>
+
+            <div class="col-md-6 offset-md-4">
+              <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  $(document).ready(function()
+  {
+    redirecter();
+  });
+
+  function redirecter()
+  {
+    var uid_set = sessionStorage.getItem("uid");;
+    if (uid_set == null)
+      window.location.replace("/login");
+  }
+
+  function edit_book(book_id)
+  {
+    $('#edit_book_modal').modal('show');
+  }
+
+  function delete_book(book_id)
+  {
+
+  }
+  </script>
+</body>
+</html>
