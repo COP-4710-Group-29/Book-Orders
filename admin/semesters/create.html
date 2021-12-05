@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-  <title>New Course</title>
+  <title>New Semester</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +18,7 @@
 
 <body>
   <nav class="navbar navbar-light navbar-expand-md navbar-custom">
-    <a class="navbar-brand" href="/">UCF Bookstore Online</a>
+    <a class="navbar-brand" href="javascript:void(0)">UCF Bookstore Online - Admin</a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
@@ -56,29 +56,15 @@
     <div class="row justify-content-center">
 
       <div class="col-md-12">
-        <h3>Create a New Course</h3>
+        <h3>Create a New Semester</h3>
 
         <hr>
 
-        <form id="create_course_form" role="form">
+        <form id="create_semester_form" role="form">
           <div class="form-group row">
-            <label for="course_name" class="col-md-4 col-form-label text-md-right">Name:</label>
+            <label for="semester_name" class="col-md-4 col-form-label text-md-right">Semester Name:</label>
             <div class="col-md-6">
-              <input type="text" id="course_name" class="form-control" name="course_name" required>
-            </div>
-          </div>
-
-          <div class="form-group row">
-            <label for="course_code" class="col-md-4 col-form-label text-md-right">Course Code:</label>
-            <div class="col-md-6">
-              <input type="text" id="course_code" class="form-control" name="course_code" required>
-            </div>
-          </div>
-
-          <div class="form-group row">
-            <label for="semester_id" class="col-md-4 col-form-label text-md-right">Which Semester?</label>
-            <div class="col-md-6">
-              <select class="form-control" id="semester_id"></select>
+              <input type="text" id="semester_name" class="form-control" name="semester_name" required>
             </div>
           </div>
 
@@ -95,40 +81,66 @@
   <script>
   $(document).ready(function()
   {
-    loadSemesters();
     redirecter();
   });
 
-  // Load in a list of semesters
-  function loadSemesters()
-  {
-    $.post('/api/load_semesters.php',{},
+  $("#create_semester_form").submit(function(event)
+	{
+    event.preventDefault();
+    var semester_name = document.getElementById("semester_name").value;
+
+    $.post('/api/create_semester.php',
+		{
+			semester_name: semester_name
+		},
 		function(response, statusTxt, xhr)
 		{
-      response = JSON.parse(response);
+			response = JSON.parse(response);
+      event.preventDefault();
 
-      // Populate the semester field with semesters
       if(response.status)
-      {
-        const semesterArray = response.semesters;
-        for(var i = 0; i < semesterArray.length; i++)
-        {
-          $("#semester_id").append('<option value="'+ semesterArray[i].semester_id +'">'+ semesterArray[i].semester_name +'</option>');
-        }
-      }
-
+        onSuccess();
       else
-        $("#semester_container").html(response.message);
+        throwError(response.message);
     });
+  });
+
+  // Semester created successfully
+  function onSuccess()
+  {
+    Swal.fire({
+			title: 'Semester Created',
+			text: 'Your semester has been created!',
+			icon: 'success',
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			confirmButtonText: 'Okay'
+		}).then((result) => {
+			if (result.value)
+				window.location.assign("https://bookstore.brpromedia.com/admin/semesters");
+		})
   }
 
+  // Displays the indicated error message.
+	function throwError(error_message)
+	{
+		Swal.fire({
+			title: 'An Error Exists',
+			text: error_message,
+			icon: 'error',
+			allowOutsideClick: true,
+			allowEscapeKey: true,
+			confirmButtonText: 'Okay'
+		})
+	}
 
   function redirecter()
   {
-    var uid_set = sessionStorage.getItem("uid");
-    if (uid_set == null)
-      window.location.replace("/login");
+    var is_admin = sessionStorage.getItem("admin");
+    if (is_admin == null)
+      window.location.replace("/admin/login");
   }
+
   </script>
 </body>
 </html>

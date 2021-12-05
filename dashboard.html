@@ -65,58 +65,22 @@
           </div>
         </div>
 
-        <div id="orders-container">
-          <div class="card order_card" id="order_1001">
+        <div id="orders_container">
+          <!--<div class="card order_card">
             <div class="card-body">
-              <b class="card-title">COP 3502</b>
-              <p class="card-text">Placed 10/02/2021</p>
+              <b class="card-title">course_code goes here</b>
               <p class="card-text">Status: <span class="badge badge-info">Recieved</span></p>
-              <p><a href="/orders/edit?order_id=1001" class="card-link">Edit Order</a></p>
+              <p><a href="/orders/edit?order_id=order_id" class="card-link">Edit Order</a></p>
             </div>
-          </div>
-
-          <div class="card order_card" id="order_1002">
-            <div class="card-body">
-              <b class="card-title">COT 3100</b>
-              <p class="card-text">Placed 11/08/2021</p>
-              <p class="card-text">Status: <span class="badge badge-success">Completed</span></p>
-              <p><a href="/orders/edit?order_id=1002" class="card-link">Edit Order</a></p>
-            </div>
-          </div>
-
-          <div class="card order_card" id="order_1004">
-            <div class="card-body">
-              <b class="card-title">CIS 4940</b>
-              <p class="card-text">Placed 11/14/2021</p>
-              <p class="card-text">Status: <span class="badge badge-info">Recieved</span></p>
-              <p><a href="/orders/edit?order_id=1001" class="card-link">Edit Order</a></p>
-            </div>
-          </div>
-
-          <div class="card order_card" id="order_1005">
-            <div class="card-body">
-              <b class="card-title">COP 3223</b>
-              <p class="card-text">Placed 11/15/2021</p>
-              <p class="card-text">Status: <span class="badge badge-info">Recieved</span></p>
-              <p><a href="/orders/edit?order_id=1005" class="card-link">Edit Order</a></p>
-            </div>
-          </div>
-
+          </div>-->
         </div>
       </div>
 
       <div class="col-md-2"></div>
 
       <div class="col-md-3">
-        <div id="managed-courses">
-          <h3>Your Courses</h3>
-          <ul class="list-group">
-            <li class="list-group-item">CIS 4940</li>
-            <li class="list-group-item">COP 3223</li>
-            <li class="list-group-item">COP 3502</li>
-            <li class="list-group-item">COT 3100</li>
-          </ul>
-        </div>
+        <h3>Your Courses</h3>
+        <ul class="list-group" id="course_container"></ul>
       </div>
     </div>
   </div>
@@ -129,7 +93,7 @@
 
   function redirecter()
   {
-    var uid_set = sessionStorage.getItem("uid");;
+    var uid_set = sessionStorage.getItem("uid");
     if (uid_set == null)
     window.location.replace("/login");
   }

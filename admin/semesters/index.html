@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-  <title>New Course</title>
+  <title>Semesters</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,7 +18,7 @@
 
 <body>
   <nav class="navbar navbar-light navbar-expand-md navbar-custom">
-    <a class="navbar-brand" href="/">UCF Bookstore Online</a>
+    <a class="navbar-brand" href="javascript:void(0)">UCF Bookstore Online - Admin</a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
@@ -27,13 +27,16 @@
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link" href="/dashboard">Dashboard</a>
+          <a class="nav-link" href="/admin/dashboard">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/orders">Your Orders</a>
+          <a class="nav-link" href="/admin/orders">Orders</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/courses">Your Courses</a>
+          <a class="nav-link" href="/admin/users">Users</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/admin/semesters">Semesters</a>
         </li>
       </ul>
 
@@ -44,7 +47,7 @@
           </a>
 
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="/profile">My Profile</a>
+            <a class="dropdown-item" href="/admin/profile">My Profile</a>
             <a class="dropdown-item" href="/logout">Sign Out</a>
           </div>
         </li>
@@ -53,40 +56,23 @@
   </nav>
 
   <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
-    <div class="row justify-content-center">
-
+    <div class="row">
       <div class="col-md-12">
-        <h3>Create a New Course</h3>
+
+        <div class="row">
+          <div class="col-md-10">
+            <h3>Semesters</h3>
+          </div>
+          <div class="col-md-2">
+            <div class="justify-content-center">
+              <a href="/admin/semesters/create" class="btn btn-primary">New Semester</a>
+            </div>
+          </div>
+        </div>
 
         <hr>
 
-        <form id="create_course_form" role="form">
-          <div class="form-group row">
-            <label for="course_name" class="col-md-4 col-form-label text-md-right">Name:</label>
-            <div class="col-md-6">
-              <input type="text" id="course_name" class="form-control" name="course_name" required>
-            </div>
-          </div>
-
-          <div class="form-group row">
-            <label for="course_code" class="col-md-4 col-form-label text-md-right">Course Code:</label>
-            <div class="col-md-6">
-              <input type="text" id="course_code" class="form-control" name="course_code" required>
-            </div>
-          </div>
-
-          <div class="form-group row">
-            <label for="semester_id" class="col-md-4 col-form-label text-md-right">Which Semester?</label>
-            <div class="col-md-6">
-              <select class="form-control" id="semester_id"></select>
-            </div>
-          </div>
-
-          <div class="col-md-6 offset-md-4">
-            <button type="submit" class="btn btn-primary">Create</button>
-          </div>
-        </form>
-
+        <div class="row" id="semester_container"></div>
       </div>
 
     </div>
@@ -95,25 +81,31 @@
   <script>
   $(document).ready(function()
   {
-    loadSemesters();
     redirecter();
+    loadSemesters();
   });
 
-  // Load in a list of semesters
   function loadSemesters()
   {
     $.post('/api/load_semesters.php',{},
 		function(response, statusTxt, xhr)
 		{
       response = JSON.parse(response);
+      console.log(response);
 
-      // Populate the semester field with semesters
       if(response.status)
       {
         const semesterArray = response.semesters;
         for(var i = 0; i < semesterArray.length; i++)
         {
-          $("#semester_id").append('<option value="'+ semesterArray[i].semester_id +'">'+ semesterArray[i].semester_name +'</option>');
+          $("#semester_container").append('\
+          <div class="col-md-4">\
+            <div class="card order_card" id="'+ semesterArray[i].semester_id +'">\
+              <div class="card-body">\
+                <p class="card-text">'+ semesterArray[i].semester_name +'</p>\
+              </div>\
+            </div>\
+          </div>');
         }
       }
 
@@ -122,12 +114,11 @@
     });
   }
 
-
   function redirecter()
   {
-    var uid_set = sessionStorage.getItem("uid");
-    if (uid_set == null)
-      window.location.replace("/login");
+    var is_admin = sessionStorage.getItem("admin");
+    if (is_admin == null)
+      window.location.replace("/admin/login");
   }
   </script>
 </body>

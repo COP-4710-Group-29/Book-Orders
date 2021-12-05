@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-  <title>Login</title>
+  <title>Admin Login</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,14 +18,14 @@
 
 <body>
   <nav class="navbar navbar-light navbar-expand-md navbar-custom">
-    <a class="navbar-brand" href="/">UCF Bookstore Online</a>
+    <a class="navbar-brand" href="javascript:void(0)">UCF Bookstore Online - Admin</a>
   </nav>
 
   <div style="padding-top: 50px;" class="container">
     <div class="row justify-content-center">
       <div class="col-md-8">
         <div class="card">
-          <div class="card-header"><b>Sign In</b></div>
+          <div class="card-header"><b>Admin Sign In</b></div>
 
           <div class="card-body">
             <div id="error_container" class="alert alert-warning">
@@ -53,17 +53,6 @@
               </div>
             </form>
 
-            <hr>
-            <div class="row">
-              <div class="col-md-9">
-                <h5 class="card-text">Don't have an account?</h5>
-                <a href="/register" class="card-link">Create an account</a>
-              </div>
-              <div class="col-md-3">
-                <a href="/admin/login" class="btn btn-primary"><i class='fas fa-sign-in-alt'></i> Admin Login</a>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
@@ -83,7 +72,7 @@
     var email = document.getElementById("email_address").value;
     var password = document.getElementById("password").value;
 
-    $.post('/api/auth.php',
+    $.post('/api/admin_auth.php',
 		{
 			email: email,
 			password: password
@@ -97,11 +86,10 @@
 			// If status is true, run onSuccess
 			if(response.status)
 			{
-        sessionStorage.setItem("uid", response.professor_id);
+        sessionStorage.setItem("uid", response.admin_id);
+        sessionStorage.setItem("admin", true);
         sessionStorage.setItem("email", email);
-        sessionStorage.setItem("first_name", response.first_name);
-        sessionStorage.setItem("last_name", response.last_name);
-        window.location.replace("/dashboard");
+        window.location.replace("/admin/dashboard");
       }
 
 			// If status is false, throw a general error
@@ -121,7 +109,7 @@
   {
     var uid_set = sessionStorage.getItem("uid");;
     if (uid_set != null)
-      window.location.replace("/dashboard");
+      window.location.replace("/admin/dashboard");
   }
   </script>
 </body>
