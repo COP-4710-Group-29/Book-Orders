@@ -26,7 +26,7 @@
           <div class="card-header"><b>Change Password</b><a href="/" class="float-right"><b>X</b></a></div>
           <div class="card-body">
             <p class="card-text">Please set a new password for $email.</p>
-            <form action="" method="">
+            <form id="reset_form" name="reset_form" role="form">
               <div class="form-group row">
                 <label for="password" class="col-md-4 col-form-label text-md-right">New Password</label>
                 <div class="col-md-6">
@@ -57,6 +57,30 @@
   {
     redirecter();
   });
+
+  $("#reset_form").submit(function (event) {
+      event.preventDefault();
+      var password = document.getElementById("password").value;
+
+    $.post('../api/reset.php',
+      {
+        password: email,
+      },
+      function (response, statusTxt, xhr) {
+        console.log(response);
+        response = JSON.parse(response);
+        event.preventDefault();
+
+        if (!response.status) {
+          errorGeneral(response.message);
+        }
+      })
+  });
+
+  function errorGeneral(error_message) {
+    $("#error_message").html(error_message);
+    $("#error_container").show();
+  }
 
   function redirecter()
   {
