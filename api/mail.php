@@ -69,7 +69,7 @@ if(isset($_POST["email"]))
         $mail->Port       = 465;
 
         //Recipients
-        $mail->setFrom('cop4710group29@gmail.com', 'UCF Library');
+        $mail->setFrom('cop4710group29@gmail.com', 'UCF Bookstore');
         $mail->addAddress($email);
         $mail->addReplyTo('no-reply@gmail.com', 'No Reply');
 

@@ -72,21 +72,28 @@
     const code = urlParams.get('code');
 
     var password = document.getElementById("password").value;
+    var passwordConfirm = document.getElementById("password_confirm").value;
 
-    $.post('../api/reset.php',
-      {
-        code: code,
-        password: password
-      },
-      function (response, statusTxt, xhr) {
-        console.log(response);
-        response = JSON.parse(response);
-        event.preventDefault();
+    if (password !== passwordConfirm) {
+      errorGeneral("Passwords do not match.")
+    } else {
+      $.post('../api/reset.php',
+        {
+          code: code,
+          password: password
+        },
+        function (response, statusTxt, xhr) {
+          console.log(response);
+          response = JSON.parse(response);
+          event.preventDefault();
 
-        if (!response.status) {
-          errorGeneral(response.message);
-        }
-      })
+          if (!response.status) {
+            errorGeneral(response.message);
+          } else {
+            errorGeneral("Password was successfully changed.");
+          }
+        })
+    }
   });
 
   function errorGeneral(error_message) {
@@ -98,7 +105,7 @@
   {
     var uid_set = sessionStorage.getItem("uid");;
     if (uid_set != null)
-      window.location.replace("/dashboard");
+      window.location.replace("../login");
   }
   </script>
 </body>

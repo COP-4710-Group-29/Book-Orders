@@ -69,6 +69,8 @@
 
         if (!response.status) {
           errorGeneral(response.message);
+        } else {
+          errorGeneral("Reset link was sent to your email.");
         }
       })
   });

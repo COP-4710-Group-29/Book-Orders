@@ -48,7 +48,7 @@
             $stmt = $pdo->prepare($sql);
             $stmt->bindValue(':code', $code);
             $delete = $stmt->execute();
-            $array = array("status"=>true);
+            $array = array("status"=>true, "message"=>"Password was successfully changed.");
             echo json_encode($array);
         }
         else
