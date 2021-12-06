@@ -74,10 +74,10 @@ if(isset($_POST["email"]))
         $mail->addReplyTo('no-reply@gmail.com', 'No Reply');
 
         //Content
-        $url = "http://" . $_SERVER["HTTP_HOST"] . "/accounts/reset?code=$code";
+        $url = "https://bookstore.brpromedia.com/accounts/reset?code=$code";
         $mail->isHTML(true);
         $mail->Subject = 'Password Recovery link';
-        $mail->Body    = '<h1>You reuested a password recovery</h1>
+        $mail->Body    = '<h1>You requested a password recovery</h1>
                             Click <a href='.$url.'> HERE </a> to change your password';
         $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
