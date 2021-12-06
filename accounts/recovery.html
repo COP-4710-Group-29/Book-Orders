@@ -24,6 +24,10 @@
         <div class="card">
           <div class="card-header"><b>Find Your Account</b><a href="/" class="float-right"><b>X</b></a></div>
           <div class="card-body">
+            <div id="error_container" class="alert alert-warning">
+              <i class='fas fa-exclamation-triangle'></i> <span id="error_message"></span>
+            </div>
+            
             <form id="recover_form" name="recover_form" role="form">
               <div class="form-group row">
                 <label for="email_address" class="col-md-4 col-form-label text-md-right">Email Address</label>
@@ -47,6 +51,7 @@
   $(document).ready(function()
   {
     redirecter();
+    $("#error_container").hide();
   });
 
   $("#recover_form").submit(function (event) {

@@ -2,14 +2,16 @@
 
     require 'connect.php';
 
-    if(!isset($_GET["code"])) 
+    if(!isset($_POST["code"]))
     {
-        exit("Can't find page");
+      $array = array("status"=>false,"message"=>"Code was not found.");
+      echo json_encode($array);
+      exit();
     }
-    
-    $code = $_GET["code"];
 
-    $sql = "SELECT COUNT(email) as num FROM reset_password WHERE code = :code";
+    $code = $_POST["code"];
+
+    $sql = "SELECT COUNT(email) as num, email FROM reset_password WHERE code = :code";
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':code', $code);
 
@@ -21,17 +23,19 @@
 
     if($row['num'] == 0)
     {
-        exit("Can't find email");
+      $array = array("status"=>false,"message"=>"Email does not exist.");
+      echo json_encode($array);
+      exit();
     }
 
     $email = $row["email"];
 
-    if(isset($_POST["password"])) 
+    if(isset($_POST["password"]))
     {
-        $newPassword = $_POST["password"]
+        $newPassword = $_POST["password"];
         $newPassword = hash('sha256', $newPassword);
 
-        $sql = "UPDATE professor SET password = :newPassword WHERE email = :email";
+        $sql = "UPDATE professors SET password = :newPassword WHERE email = :email";
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':newPassword', $newPassword);
         $stmt->bindValue(':email', $email);
@@ -45,12 +49,19 @@
             $stmt->bindValue(':code', $code);
             $delete = $stmt->execute();
             $array = array("status"=>true);
+            echo json_encode($array);
         }
-        else 
+        else
         {
-            $array = array("status"=>false,"message"=>"An internal error occured.");
-	        echo json_encode($array);
+          $array = array("status"=>false,"message"=>"An internal error occured.");
+          echo json_encode($array);
         }
     }
-    
+    else
+    {
+      $array = array("status"=>false,"message"=>"Missing required parameter: password.");
+      echo json_encode($array);
+      exit();
+    }
+
 ?>

@@ -9,7 +9,7 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+
   <link rel="stylesheet" href="/css/stylesheet.css">
   <script src="/js/global.js"></script>
 </head>
@@ -25,7 +25,11 @@
         <div class="card">
           <div class="card-header"><b>Change Password</b><a href="/" class="float-right"><b>X</b></a></div>
           <div class="card-body">
-            <p class="card-text">Please set a new password for $email.</p>
+            <div id="error_container" class="alert alert-warning">
+              <i class='fas fa-exclamation-triangle'></i> <span id="error_message"></span>
+            </div>
+
+            <p class="card-text">Please set a new password.</p>
             <form id="reset_form" name="reset_form" role="form">
               <div class="form-group row">
                 <label for="password" class="col-md-4 col-form-label text-md-right">New Password</label>
@@ -56,15 +60,23 @@
   $(document).ready(function()
   {
     redirecter();
+    $("#error_container").hide();
   });
 
-  $("#reset_form").submit(function (event) {
-      event.preventDefault();
-      var password = document.getElementById("password").value;
+  $("#reset_form").submit(function (event)
+  {
+    event.preventDefault();
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const code = urlParams.get('code');
+
+    var password = document.getElementById("password").value;
 
     $.post('../api/reset.php',
       {
-        password: email,
+        code: code,
+        password: password
       },
       function (response, statusTxt, xhr) {
         console.log(response);
