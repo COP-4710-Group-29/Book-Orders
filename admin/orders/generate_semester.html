@@ -1,0 +1,130 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/stylesheet.css">
+  <script src="/js/global.js"></script>
+</head>
+
+<body>
+  <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
+    <h3 id="semester_name"></h3>
+    <hr>
+    <div id="data_container"></div>
+  </div>
+
+  <script>
+  generateOrder();
+
+  function generateOrder()
+  {
+    loadSemesterInfo();
+    loadAllOrderData();
+  }
+
+  function loadSemesterInfo()
+  {
+
+  }
+
+  function loadAllOrderData()
+  {
+    $.post('/api/load_users.php',{},
+		function(response, statusTxt, xhr)
+		{
+      response = JSON.parse(response);
+
+      if(response.status)
+      {
+        const userArray = response.professors;
+        for(var i = 0; i < userArray.length; i++)
+        {
+          $("#data_container").append('\
+          <h5>'+ userArray[i].first_name +' '+ userArray[i].last_name +'</h5>\
+          <div id="professor_container_'+userArray[i].professor_id+'"></div><hr>');
+
+          $.post('/api/load_user_orders.php',{
+            professor_id: userArray[i].professor_id
+          },
+      		function(response, statusTxt, xhr)
+      		{
+            response = JSON.parse(response);
+            console.log(response);
+
+            if(response.status)
+            {
+              const orderArray = response.orders;
+
+              for(var j = 0; j < orderArray.length; j++)
+              {
+                $("#professor_container_"+ orderArray[j].professor_id).append('\
+                <p><strong>'+ orderArray[j].course_code +'</strong></h5>\
+                <div id="order_container_'+orderArray[j].order_id+'"></div>');
+
+                $("#order_container_"+orderArray[j].order_id).html('\
+                <table class="table table-bordered">\
+                  <thead>\
+                    <tr>\
+                      <th>Title</th>\
+                      <th>Author</th>\
+                      <th>Edition</th>\
+                      <th>Publisher</th>\
+                      <th>ISBN</th>\
+                    </tr>\
+                  </thead>\
+                  <tbody id="order_table_'+orderArray[j].order_id+'"></tbody>\
+                </table>')
+
+                $.ajax({
+                  url: "/api/load_order_details.php",
+                  type: "GET",
+                  data: {
+                    order_id: orderArray[j].order_id
+                  },
+
+                  success: function(response, statusTxt, xhr)
+                  {
+                    response = JSON.parse(response);
+
+                    if(response.status)
+                    {
+                      const bookArray = response.orders;
+
+                      for(var x = 0; x < orderArray.length; x++)
+                      {
+                        $("#order_table_"+bookArray[x].order_id).append('\
+                        <tr>\
+                          <td>'+ bookArray[x].book_title +'</td>\
+                          <td>'+ bookArray[x].author +'</td>\
+                          <td>'+ bookArray[x].edition +'</td>\
+                          <td>'+ bookArray[x].publisher +'</td>\
+                          <td>'+ bookArray[x].isbn +'</td>\
+                        </tr>');
+                      }
+                    }
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
+  }
+
+  function redirecter()
+  {
+    var is_admin = sessionStorage.getItem("admin");
+    if (is_admin == null)
+      window.location.replace("/admin/login");
+  }
+  </script>
+</body>
+</html>

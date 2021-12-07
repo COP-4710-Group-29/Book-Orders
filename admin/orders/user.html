@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-  <title>Orders</title>
+  <title>Viewing User Orders</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,7 +29,7 @@
         <li class="nav-item">
           <a class="nav-link" href="/admin/dashboard">Dashboard</a>
         </li>
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" href="/admin/orders">Orders</a>
         </li>
         <li class="nav-item">
@@ -58,14 +58,10 @@
   <div style="padding-top: 50px; padding-bottom: 50px;" class="container-fluid">
     <div class="row">
       <div class="col-sm-1"></div>
-
-      <div class="col-md-8"><h3>Orders</h3></div>
-
-      <div class="col-md-2">
-        <a class="btn btn-primary" onclick="printOptions()">Open Print Options</a>
+      <div class="col-md-11">
+        <h3>Viewing, <span id="professor_name"></span></h3>
+        <h5>Customer ID: <span id="professor_id"></span></h5>
       </div>
-
-      <div class="col-sm-1"></div>
     </div>
 
     <div class="row">
@@ -90,49 +86,35 @@
     </div>
   </div>
 
-  <div class="modal fade" id="print_orders_dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Print Order Options</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-
-        <div class="modal-body">
-          <form id="print_orders_form" action="/admin/orders/generate_semester" method="GET">
-            <div class="form-group">
-              <label for="semester_id">Which Semester?</label>
-              <select class="form-control" name="semester_id" id="semester_id"></select>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Print</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
   <script>
   $(document).ready(function()
   {
     redirecter();
     loadOrders();
-    loadSemesters();
     $('[data-toggle="tooltip"]').tooltip();
   });
 
   function loadOrders()
   {
-    $.post('/api/load_all_orders.php',{},
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const professor_id = urlParams.get('professor_id');
+
+    $.post('/api/load_user_orders.php',{
+      professor_id: professor_id
+    },
 		function(response, statusTxt, xhr)
 		{
-      response = JSON.parse(response);
       console.log(response);
+      response = JSON.parse(response);
 
       if(response.status)
       {
         const orderArray = response.orders;
+
+        $("#professor_name").html(orderArray[0].first_name +" "+ orderArray[0].last_name);
+        $("#professor_id").html(professor_id);
+
         for(var i = 0; i < orderArray.length; i++)
         {
           $("#order_container").append('\
@@ -152,34 +134,6 @@
 
       else
         $("#error_container").html(response.message);
-    });
-  }
-
-  function printOptions()
-  {
-    $('#print_orders_dialog').modal('show');
-  }
-
-  // Load in a list of semesters
-  function loadSemesters()
-  {
-    $.post('/api/load_semesters.php',{},
-		function(response, statusTxt, xhr)
-		{
-      response = JSON.parse(response);
-
-      // Populate the semester field with semesters
-      if(response.status)
-      {
-        const semesterArray = response.semesters;
-        for(var i = 0; i < semesterArray.length; i++)
-        {
-          $("#semester_id").append('<option value="'+ semesterArray[i].semester_id +'">'+ semesterArray[i].semester_name +'</option>');
-        }
-      }
-
-      else
-        $("#semester_container").html(response.message);
     });
   }
 

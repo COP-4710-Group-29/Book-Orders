@@ -1,16 +1,23 @@
 <?php
 
 /*
-load_all_orders.php
+generate_semester_order.php
 Author: Sarah Myerson
-11/30/2021
+12/06/2021
 
-Loads a list of users (non-admins)
+Gets all data related to orders for a given semester
 */
 
 require 'connect.php';
 
-$sql = "SELECT o.order_id, p.professor_id, c.semester_id, s.semester_name, p.first_name, p.last_name, c.course_code, o.timestamp
+if(!isset($_GET['semester_id']))
+{
+  $array = array("status"=>false,"message"=>"Missing parameter: semester_id");
+	echo json_encode($array);
+  die();
+}
+
+$sql = "SELECT o.order_id, p.professor_id, c.semester_id, s.semester_name, p.first_name, p.last_name, c.course_code
   FROM professors AS p
   INNER JOIN courses AS c
     ON c.professor_id = p.professor_id

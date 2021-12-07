@@ -1,0 +1,101 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/css/stylesheet.css">
+  <script src="/js/global.js"></script>
+</head>
+
+<body>
+  <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
+    <h3><span id="course_code"></span> (<span id="course_name"></span>)</h3>
+    <h5>Order number: <span id="order_id"></span></h5>
+
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Edition</th>
+          <th>Publisher</th>
+          <th>ISBN</th>
+        </tr>
+      </thead>
+      <tbody id="order_container"></tbody>
+    </table>
+  </div>
+
+  <script>
+  $(document).ready(function()
+  {
+    generateOrder();
+  });
+
+  function generateOrder()
+  {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const order_id = urlParams.get('order_id');
+
+    $.ajax({
+      url: "/api/load_order_details.php",
+      type: "GET",
+      data: {
+        order_id: order_id
+      },
+
+      success: function(response, statusTxt, xhr)
+      {
+        response = JSON.parse(response);
+        console.log(response);
+
+        if(response.status)
+        {
+          const orderArray = response.orders;
+
+          $("#course_name").html(orderArray[0].course_name);
+          $("#course_code").html(orderArray[0].course_code);
+          $("#order_id").html(orderArray[0].order_id);
+
+          for(var i = 0; i < orderArray.length; i++)
+          {
+            $("#order_container").append('\
+            <tr>\
+              <td>'+ orderArray[i].book_title +'</td>\
+              <td>'+ orderArray[i].author +'</td>\
+              <td>'+ orderArray[i].edition +'</td>\
+              <td>'+ orderArray[i].publisher +'</td>\
+              <td>'+ orderArray[i].isbn +'</td>\
+            </tr>');
+          }
+
+          window.print();
+        }
+
+        else
+          $("#order_container").html(response.message);
+      },
+
+      error: function(response, statusTxt, xhr)
+      {
+        $("#order_container").html("An error occured");
+      }
+    });
+  }
+
+  function redirecter()
+  {
+    var is_admin = sessionStorage.getItem("admin");
+    if (is_admin == null)
+      window.location.replace("/admin/login");
+  }
+  </script>
+</body>
+</html>
