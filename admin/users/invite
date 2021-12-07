@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-  <title>New Semester</title>
+  <title>Invite a User</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -35,7 +35,7 @@
         <li class="nav-item">
           <a class="nav-link" href="/admin/users">Users</a>
         </li>
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" href="/admin/semesters">Semesters</a>
         </li>
       </ul>
@@ -54,25 +54,25 @@
       </ul>
     </div>
   </nav>
-  
+
   <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
     <div class="row justify-content-center">
 
       <div class="col-md-12">
-        <h3>Create a New Semester</h3>
+        <h3>Invite a Professor</h3>
 
         <hr>
 
-        <form id="create_semester_form" role="form">
+        <form id="invite_form" role="form">
           <div class="form-group row">
-            <label for="semester_name" class="col-md-4 col-form-label text-md-right">Semester Name:</label>
+            <label for="email_address" class="col-md-4 col-form-label text-md-right">Email Address:</label>
             <div class="col-md-6">
-              <input type="text" id="semester_name" class="form-control" name="semester_name" required>
+              <input type="text" id="email_address" class="form-control" name="email_address" required>
             </div>
           </div>
 
           <div class="col-md-6 offset-md-4">
-            <button type="submit" class="btn btn-primary">Create</button>
+            <button type="submit" class="btn btn-primary">Invite</button>
           </div>
         </form>
 
@@ -87,17 +87,18 @@
     redirecter();
   });
 
-  $("#create_semester_form").submit(function(event)
+  $("#invite_form").submit(function(event)
 	{
     event.preventDefault();
-    var semester_name = document.getElementById("semester_name").value;
+    var email = document.getElementById("email_address").value;
 
-    $.post('/api/create_semester.php',
+    $.post('/api/mail/send_invite.php',
 		{
-			semester_name: semester_name
+			email: email
 		},
 		function(response, statusTxt, xhr)
 		{
+      console.log(response);
 			response = JSON.parse(response);
       event.preventDefault();
 
@@ -112,15 +113,15 @@
   function onSuccess()
   {
     Swal.fire({
-			title: 'Semester Created',
-			text: 'Your semester has been created!',
+			title: 'User Invited',
+			text: 'The user was invited to join the site!',
 			icon: 'success',
 			allowOutsideClick: false,
 			allowEscapeKey: false,
 			confirmButtonText: 'Okay'
 		}).then((result) => {
 			if (result.value)
-				window.location.assign("https://bookstore.brpromedia.com/admin/semesters");
+				window.location.assign("https://bookstore.brpromedia.com/admin/users");
 		})
   }
 

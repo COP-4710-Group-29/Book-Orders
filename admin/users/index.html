@@ -116,7 +116,7 @@
             <td>\
             <a data-toggle="tooltip" title="View orders" href="/admin/orders/user?professor_id='+ userArray[i].professor_id +'">\
             <i class="fas fa-eye"></i></a>\
-              <a data-toggle="tooltip" title="Send a reminder email!" href="javascript:void(0)" onclick="send_reminder_email(\''+ userArray[i].email +'\')">\
+              <a data-toggle="tooltip" title="Send a reminder email!" href="javascript:void(0)" onclick="sendReminderEmail(\''+ userArray[i].email +'\')">\
               <i class="fas fa-paper-plane"></i></a>\
             </td>\
           </tr>');
@@ -129,12 +129,20 @@
   }
 
   // Sends a reminder email
-  function send_reminder_email(email, first_name)
+  function sendReminderEmail(email)
   {
-    var message = 'Hello ' + first_name +'\
-    This is a reminder that your UCF Bookstore order for the upcoming semester\
-    is due soon. Please visit, https://bookstore.brpromedia.com to submit your order!';
-    return;
+    $.post('/api/mail/remind_of_deadline.php',{
+      email: email
+    },
+    function(response, statusTxt, xhr)
+    {
+      response = JSON.parse(response);
+
+      if(response.status)
+      {
+        alert("Email sent!");
+      }
+    });
   }
 
   function redirecter()

@@ -59,23 +59,16 @@
     <div class="row justify-content-center">
       <div class="col-sm-1"></div>
       <div class="col-md-7">
-        <h3>Order Dashboard</h3>
-
-        <div id="stats_container"></div>
-      </div>
-
-      <div class="col-md-1"></div>
-
-      <div class="col-md-2">
         <h3>Quick Actions</h3>
+
         <ul class="list-group">
-          <li class="list-group-item">Send Reminder Email to All Users</li>
-          <li class="list-group-item">Update Deadline</li>
-          <li class="list-group-item">Invite a User</li>
+          <li class="list-group-item"><a href="javascript:void(0)" onclick="sendReminderEmail()">Send Reminder Email to All Users</a></li>
+          <li class="list-group-item"><a href="/admin/deadline">Update Deadline</a></li>
+          <li class="list-group-item"><a href="/admin/users/invite">Invite a User</a></li>
         </ul>
       </div>
 
-      <div class="col-sm-1"></div>
+      <div class="col-md-4"></div>
     </div>
 
     <div class="row justify-content-center">
@@ -89,6 +82,35 @@
   {
     redirecter();
   });
+
+  function sendReminderEmail()
+  {
+    $.post('/api/load_users.php',{},
+		function(response, statusTxt, xhr)
+		{
+      response = JSON.parse(response);
+
+      if(response.status)
+      {
+        const userArray = response.professors;
+        for(var i = 0; i < userArray.length; i++)
+        {
+          $.post('/api/mail/remind_of_deadline.php',{
+            email: userArray[i].email
+          },
+      		function(response, statusTxt, xhr)
+      		{
+            response = JSON.parse(response);
+
+            if(response.status)
+            {}
+          });
+        }
+      }
+    });
+
+    alert("Email sent!");
+  }
 
   function redirecter()
   {

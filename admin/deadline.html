@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-  <title>New Semester</title>
+  <title>Deadlines</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -35,7 +35,7 @@
         <li class="nav-item">
           <a class="nav-link" href="/admin/users">Users</a>
         </li>
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" href="/admin/semesters">Semesters</a>
         </li>
       </ul>
@@ -54,25 +54,25 @@
       </ul>
     </div>
   </nav>
-  
+
   <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
     <div class="row justify-content-center">
 
       <div class="col-md-12">
-        <h3>Create a New Semester</h3>
-
+        <h3>Order Deadline</h3>
+        <h5>Currently: <span id="current_deadline"></span></h5>
         <hr>
 
-        <form id="create_semester_form" role="form">
+        <form id="deadline_form" role="form">
           <div class="form-group row">
-            <label for="semester_name" class="col-md-4 col-form-label text-md-right">Semester Name:</label>
+            <label for="new_deadline" class="col-md-4 col-form-label text-md-right">New Deadline:</label>
             <div class="col-md-6">
-              <input type="text" id="semester_name" class="form-control" name="semester_name" required>
+              <input type="date" id="new_deadline" class="form-control" name="new_deadline" required>
             </div>
           </div>
 
           <div class="col-md-6 offset-md-4">
-            <button type="submit" class="btn btn-primary">Create</button>
+            <button type="submit" class="btn btn-primary">Change</button>
           </div>
         </form>
 
@@ -85,24 +85,46 @@
   $(document).ready(function()
   {
     redirecter();
+    getDeadline();
   });
 
-  $("#create_semester_form").submit(function(event)
+  function getDeadline()
+  {
+    $.post('/api/getDeadline.php',{},
+		function(response, statusTxt, xhr)
+		{
+			response = JSON.parse(response);
+
+      if(response.status)
+      {
+        const responseArray = response.deadline;
+        $("#current_deadline").html(responseArray[0].deadline);
+      }
+      else
+        throwError(response.message);
+    });
+  }
+
+  $("#deadline_form").submit(function(event)
 	{
     event.preventDefault();
-    var semester_name = document.getElementById("semester_name").value;
+    var deadline = document.getElementById("new_deadline").value;
 
-    $.post('/api/create_semester.php',
+    $.post('/api/changeDeadline.php',
 		{
-			semester_name: semester_name
+			deadline: deadline
 		},
 		function(response, statusTxt, xhr)
 		{
+      console.log(response);
 			response = JSON.parse(response);
       event.preventDefault();
 
       if(response.status)
+      {
+        getDeadline();
         onSuccess();
+      }
       else
         throwError(response.message);
     });
@@ -112,15 +134,12 @@
   function onSuccess()
   {
     Swal.fire({
-			title: 'Semester Created',
-			text: 'Your semester has been created!',
+			title: 'Deadline Updated',
+			text: 'The was successfully changed!',
 			icon: 'success',
-			allowOutsideClick: false,
-			allowEscapeKey: false,
+			allowOutsideClick: true,
+			allowEscapeKey: true,
 			confirmButtonText: 'Okay'
-		}).then((result) => {
-			if (result.value)
-				window.location.assign("https://bookstore.brpromedia.com/admin/semesters");
 		})
   }
 
