@@ -8,11 +8,11 @@ jobs:
     - name: Deploy to Production server
       uses: easingthemes/ssh-deploy@main
       env:
-        SSH_PRIVATE_KEY: ${{ secrets."MJC6+D6K/MCwgCLFXCI/jnL33+WcuG8UoUOANAG5VZs" }}
+        SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
         ARGS: "-rltgoDzvO"
         SOURCE: "/"
-        REMOTE_HOST: ${{ secrets.bookstore.brpromedia.com }}
-        REMOTE_USER: ${{ secrets.root }}
-        TARGET: ${{ secrets."/var/www/html/" }}
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+        REMOTE_USER: ${{ secrets.REMOTE_USER }}
+        TARGET: ${{ secrets.REMOTE_TARGET }}
         EXCLUDE: "/dist/, /node_modules/"
 
