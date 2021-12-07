@@ -1,0 +1,151 @@
+<html lang="en">
+<head>
+  <title>New Admin Registration</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+  <link rel="stylesheet" href="/css/stylesheet.css">
+  <script src="/js/global.js"></script>
+</head>
+
+<body>
+<nav class="navbar navbar-light navbar-expand-md navbar-custom">
+  <a class="navbar-brand" href="javascript:void(0)">UCF Bookstore Online - Admin</a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="collapsibleNavbar">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/orders">Orders</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/users">Users</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/admin/semesters">Semesters</a>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="" id="navbardrop" data-toggle="dropdown">
+          My Account
+        </a>
+
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="/admin/profile">My Profile</a>
+          <a class="dropdown-item" href="/logout">Sign Out</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+  <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header"><b>Let's Set Up A New Admin</b><a href="/" class="float-right"><b>X</b></a></div>
+          <div class="card-body">
+            <form id="registration_form" name="registration_form" role="form">
+              <div class="form-group row">
+                <label for="email_address" class="col-md-4 col-form-label text-md-right">Email Address</label>
+                <div class="col-md-6">
+                  <input type="text" id="email_address" class="form-control" name="email_address" required autofocus>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+                <div class="col-md-6">
+                  <input type="password" id="password" class="form-control" name="password" required>
+                </div>
+              </div>
+
+              <div class="col-md-6 offset-md-4">
+                <button type="submit" class="btn btn-primary">Finish</button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  $(document).ready(function()
+  {
+  });
+
+  $("#registration_form").submit(function(event)
+	{
+    event.preventDefault();
+    var email = document.getElementById("email_address").value;
+    var password = document.getElementById("password").value;
+
+    $.post('/api/register_admin.php',
+		{
+			email: email,
+			password: password
+		},
+		function(response, statusTxt, xhr)
+		{
+			response = JSON.parse(response);
+      event.preventDefault();
+
+			// If status is true, run onSuccess
+			if(response.status)
+				onSuccess();
+
+			// If status is false, throw a general error
+			else
+				errorGeneral(response.message);
+		})
+  });
+
+  // Account created successfully
+  function onSuccess()
+  {
+    Swal.fire({
+			title: 'Admin Created',
+			text: 'The new admin account was created. They can login to their account now.',
+			icon: 'success',
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			confirmButtonText: 'Okay'
+		}).then((result) => {
+			if (result.value)
+				window.location.assign("https://bookstore.brpromedia.com/admin/users/admins");
+		})
+  }
+
+  // Displays a general error message.
+	function errorGeneral(error_message)
+	{
+		Swal.fire({
+			title: 'An Error Exists',
+			text: error_message,
+			icon: 'error',
+			allowOutsideClick: true,
+			allowEscapeKey: true,
+			confirmButtonText: 'Okay'
+		})
+	}
+  </script>
+</body>
+</html>
