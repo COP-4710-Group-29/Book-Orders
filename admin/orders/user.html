@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-  <title>Orders</title>
+  <title>Viewing User Orders</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,7 +29,7 @@
         <li class="nav-item">
           <a class="nav-link" href="/admin/dashboard">Dashboard</a>
         </li>
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" href="/admin/orders">Orders</a>
         </li>
         <li class="nav-item">
@@ -59,7 +59,8 @@
     <div class="row">
       <div class="col-sm-1"></div>
       <div class="col-md-11">
-        <h3>Orders</h3>
+        <h3>Viewing, <span id="professor_name"></span></h3>
+        <h5>Customer ID: <span id="professor_id"></span></h5>
       </div>
     </div>
 
@@ -95,15 +96,25 @@
 
   function loadOrders()
   {
-    $.post('/api/load_all_orders.php',{},
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const professor_id = urlParams.get('professor_id');
+
+    $.post('/api/load_user_orders.php',{
+      professor_id: professor_id
+    },
 		function(response, statusTxt, xhr)
 		{
-      response = JSON.parse(response);
       console.log(response);
+      response = JSON.parse(response);
 
       if(response.status)
       {
         const orderArray = response.orders;
+
+        $("#professor_name").html(orderArray[0].first_name +" "+ orderArray[0].last_name);
+        $("#professor_id").html(professor_id);
+
         for(var i = 0; i < orderArray.length; i++)
         {
           $("#order_container").append('\
