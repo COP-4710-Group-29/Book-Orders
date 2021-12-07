@@ -60,11 +60,11 @@
 
         <hr>
 
-        <form action="" method="">
+        <form id="create_order_form">
           <div class="form-group row">
             <label for="password" class="col-md-4 col-form-label text-md-right">Which Course?</label>
             <div class="col-md-6">
-              <select class="form-control" id="course_id"></select>
+              <select class="form-control" name="course_id" id="course_id"></select>
             </div>
           </div>
 
@@ -82,7 +82,81 @@
   $(document).ready(function()
   {
     redirecter();
+    getCourses();
   });
+
+  // Gets all courses for a given user
+  function getCourses()
+  {
+    var uid = sessionStorage.getItem("uid");
+
+    // Empty out the course container
+    $("#course_container").html('');
+
+    // Ajax call to get all of a user's courses.
+    // Method: POST
+    $.post('/api/load_user_courses.php',{
+      professor_id: uid
+    },
+		function(response, statusTxt, xhr)
+		{
+			response = JSON.parse(response);
+
+      if(response.status)
+      {
+        const responseArray = response.courses;
+        for(var i = 0; i < responseArray.length; i++)
+        {
+          // Insert the data
+          $("#course_id").append('<option value="'+ responseArray[i].course_id +'">'+ responseArray[i].course_code +' - '+ responseArray[i].semester_name +'</option>');
+        }
+      }
+      else
+        throwError(response.message);
+    });
+  }
+
+  // Watches for submission of the edit form
+  $("#create_order_form").submit(function(event)
+	{
+    event.preventDefault();
+
+    // Gets the professor id
+    var uid = sessionStorage.getItem("uid");
+
+    // Gets the value of the inputs
+    var course_id = document.getElementById("course_id").value;
+
+    $.post('/api/createOrder.php',
+		{
+      course_id: course_id,
+      professor_id: uid
+		},
+		function(response, statusTxt, xhr)
+		{
+      console.log(response);
+			response = JSON.parse(response);
+      event.preventDefault();
+
+      if(response.status)
+        window.location.replace("/orders/");
+      else
+        throwError(response.message);
+    });
+  });
+
+  // Displays the indicated error message.
+	function throwError(error_message)
+	{
+		Swal.fire({
+			title: 'An Error Exists',
+			text: error_message,
+			icon: 'error',
+			allowOutsideClick: true,
+			allowEscapeKey: true,
+			confirmButtonText: 'Okay'
+		})
+	}
 
   function redirecter()
   {
