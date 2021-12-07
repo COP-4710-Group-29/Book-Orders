@@ -47,9 +47,17 @@ if(!$result)
 // Fetch the result
 $orderData = array();
 
-$orderData['status'] = true;
-
-while($row = $stmt->fetch(PDO::FETCH_ASSOC))
-  $orderData['orders'][] = $row;
+if ($stmt->rowCount() > 0)
+{
+  $orderData['status'] = true;
+  while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+  {
+    $orderData['orders'][] = $row;
+  }
+}
+else
+{
+  $orderData['status'] = false;
+}
 
 echo json_encode($orderData);

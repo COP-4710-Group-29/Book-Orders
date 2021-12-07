@@ -17,72 +17,104 @@
   <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
     <h3 id="semester_name"></h3>
     <hr>
-
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Author</th>
-          <th>Edition</th>
-          <th>Publisher</th>
-          <th>ISBN</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+    <div id="data_container"></div>
   </div>
 
   <script>
-  $(document).ready(function()
-  {
-    generateOrder();
-  });
+  generateOrder();
 
   function generateOrder()
   {
-    $.ajax({
-      url: "/api/generate_semester_order.php",
-      type: "GET",
-      data: {
-        semester_id: semester_id
-      },
+    loadSemesterInfo();
+    loadAllOrderData();
+  }
 
-      success: function(response, statusTxt, xhr)
+  function loadSemesterInfo()
+  {
+
+  }
+
+  function loadAllOrderData()
+  {
+    $.post('/api/load_users.php',{},
+		function(response, statusTxt, xhr)
+		{
+      response = JSON.parse(response);
+
+      if(response.status)
       {
-        response = JSON.parse(response);
-        console.log(response);
-
-        if(response.status)
+        const userArray = response.professors;
+        for(var i = 0; i < userArray.length; i++)
         {
-          const orderArray = response.orders;
+          $("#data_container").append('\
+          <h5>'+ userArray[i].first_name +' '+ userArray[i].last_name +'</h5>\
+          <div id="professor_container_'+userArray[i].professor_id+'"></div><hr>');
 
-          $("#course_name").html(orderArray[0].course_name);
-          $("#course_code").html(orderArray[0].course_code);
-          $("#order_id").html(orderArray[0].order_id);
+          $.post('/api/load_user_orders.php',{
+            professor_id: userArray[i].professor_id
+          },
+      		function(response, statusTxt, xhr)
+      		{
+            response = JSON.parse(response);
+            console.log(response);
 
-          for(var i = 0; i < orderArray.length; i++)
-          {
-            $("#order_container").append('\
-            <tr>\
-              <td>'+ orderArray[i].book_title +'</td>\
-              <td>'+ orderArray[i].author +'</td>\
-              <td>'+ orderArray[i].edition +'</td>\
-              <td>'+ orderArray[i].publisher +'</td>\
-              <td>'+ orderArray[i].isbn +'</td>\
-            </tr>');
-          }
+            if(response.status)
+            {
+              const orderArray = response.orders;
 
-          window.print();
+              for(var j = 0; j < orderArray.length; j++)
+              {
+                $("#professor_container_"+ orderArray[j].professor_id).append('\
+                <p><strong>'+ orderArray[j].course_code +'</strong></h5>\
+                <div id="order_container_'+orderArray[j].order_id+'"></div>');
+
+                $("#order_container_"+orderArray[j].order_id).html('\
+                <table class="table table-bordered">\
+                  <thead>\
+                    <tr>\
+                      <th>Title</th>\
+                      <th>Author</th>\
+                      <th>Edition</th>\
+                      <th>Publisher</th>\
+                      <th>ISBN</th>\
+                    </tr>\
+                  </thead>\
+                  <tbody id="order_table_'+orderArray[j].order_id+'"></tbody>\
+                </table>')
+                
+                $.ajax({
+                  url: "/api/load_order_details.php",
+                  type: "GET",
+                  data: {
+                    order_id: orderArray[j].order_id
+                  },
+
+                  success: function(response, statusTxt, xhr)
+                  {
+                    response = JSON.parse(response);
+
+                    if(response.status)
+                    {
+                      const bookArray = response.orders;
+
+                      for(var x = 0; x < orderArray.length; x++)
+                      {
+                        $("#order_table_"+bookArray[x].order_id).append('\
+                        <tr>\
+                          <td>'+ bookArray[x].book_title +'</td>\
+                          <td>'+ bookArray[x].author +'</td>\
+                          <td>'+ bookArray[x].edition +'</td>\
+                          <td>'+ bookArray[x].publisher +'</td>\
+                          <td>'+ bookArray[x].isbn +'</td>\
+                        </tr>');
+                      }
+                    }
+                  }
+                });
+              }
+            }
+          });
         }
-
-        else
-          $("#order_container").html(response.message);
-      },
-
-      error: function(response, statusTxt, xhr)
-      {
-        $("#order_container").html("An error occured");
       }
     });
   }
