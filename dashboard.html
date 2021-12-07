@@ -55,7 +55,7 @@
   <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
     <div class="row justify-content-center">
 
-      <div class="col-md-7">
+      <div class="col-md-8">
         <h3>Your Active Orders</h3>
 
         <div class="card order_card">
@@ -65,18 +65,22 @@
           </div>
         </div>
 
-        <div id="orders_container">
-          <!--<div class="card order_card">
-            <div class="card-body">
-              <b class="card-title">course_code goes here</b>
-              <p class="card-text">Status: <span class="badge badge-info">Recieved</span></p>
-              <p><a href="/orders/edit?order_id=order_id" class="card-link">Edit Order</a></p>
-            </div>
-          </div>-->
-        </div>
+        <div class="error_container"></div>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Course Code</th>
+              <th>Semester</th>
+              <th>Status</th>
+              <th>View</th>
+            </tr>
+          </thead>
+          <tbody id="order_container"></tbody>
+        </table>
       </div>
 
-      <div class="col-md-2"></div>
+      <div class="col-md-1"></div>
 
       <div class="col-md-3">
         <h3>Your Courses</h3>
@@ -89,7 +93,74 @@
   $(document).ready(function()
   {
     redirecter();
+    loadOrders();
+    getCourses();
   });
+
+  function loadOrders()
+  {
+    var uid = sessionStorage.getItem("uid");
+
+    $.post('/api/load_user_orders.php',{
+      professor_id: uid
+    },
+		function(response, statusTxt, xhr)
+		{
+      response = JSON.parse(response);
+
+      if(response.status)
+      {
+        const orderArray = response.orders;
+        for(var i = 0; i < orderArray.length; i++)
+        {
+          $("#order_container").append('\
+          <tr>\
+            <td>'+ orderArray[i].order_id +'</td>\
+            <td>'+ orderArray[i].course_code +'</td>\
+            <td>'+ orderArray[i].semester_name +'</td>\
+            <td>Recieved</td>\
+            <td>\
+              <a href="/orders/edit?order_id='+ orderArray[i].order_id +'">\
+              <i class="fas fa-eye"></i></a>\
+            </td>\
+          </tr>');
+        }
+      }
+
+      else
+        $("#error_container").html(response.message);
+    });
+  }
+
+  // Gets all courses for a given user
+  function getCourses()
+  {
+    var uid = sessionStorage.getItem("uid");
+
+    // Ajax call to get all of a user's courses.
+    // Method: POST
+    $.post('/api/load_user_courses.php',{
+      professor_id: uid
+    },
+		function(response, statusTxt, xhr)
+		{
+			response = JSON.parse(response);
+
+      if(response.status)
+      {
+        const responseArray = response.courses;
+        for(var i = 0; i < responseArray.length; i++)
+        {
+          // Insert the data
+          $("#course_container").append('<li class="list-group-item">'+responseArray[i].course_code+'</li>');
+        }
+      }
+
+      else
+        $("#course_container").html(response.message);
+    });
+  }
+
 
   function redirecter()
   {

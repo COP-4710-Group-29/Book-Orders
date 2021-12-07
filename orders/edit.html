@@ -61,7 +61,7 @@
 
         <hr>
 
-        <div class="row" id="book_container">
+        <div class="row" id="book_container"></div>
           <!--<div class="col-md-4">
             <div class="card order_card">
               <div class="card-header">
@@ -79,17 +79,6 @@
               </div>
             </div>
           </div>-->
-
-          <div class="col-md-4">
-            <div class="card order_card">
-              <div class="card-header">Add Another Book?</div>
-              <div class="card-body">
-                <a href="" class="btn btn-primary">Add a new book</a>
-              </div>
-            </div>
-          </div>
-
-        </div>
       </div>
 
     </div>
@@ -99,23 +88,26 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Edit (book_title)</h4>
+          <h4 class="modal-title">Edit <span id="book_title_display"></span></h4>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
 
         <div class="modal-body">
-          <form id="edit_book_form" action="" method="">
+          <form id="edit_book_form">
+
+            <input type="hidden" id="book_id" name="book_id">
+
             <div class="form-group row">
-              <label for="title" class="col-md-4 col-form-label text-md-right">Title:</label>
+              <label for="book_title" class="col-md-4 col-form-label text-md-right">Title:</label>
               <div class="col-md-6">
-                <input type="text" id="title" class="form-control" name="title" required>
+                <input type="text" id="book_title" class="form-control" name="book_title" required>
               </div>
             </div>
 
             <div class="form-group row">
-              <label for="title" class="col-md-4 col-form-label text-md-right">Author:</label>
+              <label for="author" class="col-md-4 col-form-label text-md-right">Author:</label>
               <div class="col-md-6">
-                <input type="text" id="title" class="form-control" name="title" required>
+                <input type="text" id="author" class="form-control" name="author" required>
               </div>
             </div>
 
@@ -149,10 +141,68 @@
     </div>
   </div>
 
+  <div class="modal fade" id="new_book_modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Add a New Book</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <form id="new_book_form">
+
+            <input type="hidden" id="new_book_order_id" name="new_book_order_id">
+
+            <div class="form-group row">
+              <label for="new_book_title" class="col-md-4 col-form-label text-md-right">Title:</label>
+              <div class="col-md-6">
+                <input type="text" id="new_book_title" class="form-control" name="new_book_title" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="new_author" class="col-md-4 col-form-label text-md-right">Author:</label>
+              <div class="col-md-6">
+                <input type="text" id="new_author" class="form-control" name="new_author" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="new_edition" class="col-md-4 col-form-label text-md-right">Edition:</label>
+              <div class="col-md-6">
+                <input type="text" id="new_edition" class="form-control" name="new_edition" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="new_publisher" class="col-md-4 col-form-label text-md-right">Publisher:</label>
+              <div class="col-md-6">
+                <input type="text" id="new_publisher" class="form-control" name="new_publisher" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="new_isbn" class="col-md-4 col-form-label text-md-right">ISBN:</label>
+              <div class="col-md-6">
+                <input type="text" id="new_isbn" class="form-control" name="new_isbn" required>
+              </div>
+            </div>
+
+            <div class="col-md-6 offset-md-4">
+              <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
   $(document).ready(function()
   {
     redirecter();
+    getBooks();
   });
 
   function redirecter()
@@ -162,15 +212,243 @@
       window.location.replace("/login");
   }
 
-  function edit_book(book_id)
+  // Gets all books for a given order
+  function getBooks()
   {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const order_id = urlParams.get('order_id');
+
+    // Empty out the book container
+    $("#book_container").html('');
+
+    // Changes the value of the edit form
+    document.getElementById("new_book_order_id").value = order_id;
+
+    // Ajax call to get all of a user's books.
+    // Method: POST
+    $.ajax({
+      url: "/api/load_order_details.php",
+      type: "GET",
+      data: {
+        order_id: order_id
+      },
+
+      success: function(response, statusTxt, xhr)
+      {
+        response = JSON.parse(response);
+        console.log(response);
+
+        if(response.status)
+        {
+          const orderArray = response.orders;
+
+          $("#course_name").html(orderArray[0].course_name);
+          $("#course_code").html(orderArray[0].course_code);
+          $("#order_id").html(orderArray[0].order_id);
+
+          for(var i = 0; i < orderArray.length; i++)
+          {
+            $("#book_container").append('\
+            <div class="col-md-4">\
+              <div class="card order_card" id="'+ orderArray[i].book_id +'">\
+                <div class="card-header">\
+                  <span class="float-left">'+ orderArray[i].book_title +'</span>\
+                  <span class="float-right">\
+                    <a onclick="display_edit_dialog(\''+ orderArray[i].book_id +'\',\''+ orderArray[i].book_title +'\', \''+ orderArray[i].author +'\', \''+ orderArray[i].edition +'\', \''+ orderArray[i].publisher +'\', \''+ orderArray[i].isbn +'\', )" style="margin: 0px 4px;" class="fas fa-pen"></a>\
+                    <a onclick="delete_book(\''+ orderArray[i].book_id +'\')" style="margin: 0px 4px;" class="fas fa-trash"></a>\
+                  </span>\
+                </div>\
+                <div class="card-body">\
+                  <p class="card-text">'+ orderArray[i].author +'</p>\
+                  <p class="card-text">Edition: '+ orderArray[i].edition +'</p>\
+                  <p class="card-text">Publisher: '+ orderArray[i].publisher +'</p>\
+                  <p class="card-text">ISBN: '+ orderArray[i].isbn +'</p>\
+                </div>\
+              </div>\
+            </div>');
+          }
+
+          $("#book_container").append('\
+          <div class="col-md-4">\
+            <div class="card order_card">\
+              <div class="card-header">Add Another Book?</div>\
+              <div class="card-body">\
+                <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+              </div>\
+            </div>\
+          </div>');
+        }
+
+        else
+        {
+          throwError(response.message);
+          $("#book_container").append('\
+          <div class="col-md-4">\
+            <div class="card order_card">\
+              <div class="card-header">Add Another Book?</div>\
+              <div class="card-body">\
+                <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+              </div>\
+            </div>\
+          </div>');
+        }
+      },
+
+      error: function(response, statusTxt, xhr)
+      {
+        throwError("An error occured.");
+        $("#book_container").append('\
+        <div class="col-md-4">\
+          <div class="card order_card">\
+            <div class="card-header">Add Another Book?</div>\
+            <div class="card-body">\
+              <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+            </div>\
+          </div>\
+        </div>');
+      }
+    });
+  }
+
+  // Watches for submission of the edit form
+  $("#edit_book_form").submit(function(event)
+	{
+    event.preventDefault();
+
+    // Gets the value of the inputs
+    var book_id = document.getElementById("book_id").value;
+    var book_title = document.getElementById("book_title").value;
+    var author = document.getElementById("author").value;
+    var edition = document.getElementById("edition").value;
+    var publisher = document.getElementById("publisher").value;
+    var isbn = document.getElementById("isbn").value;
+
+    $.post('/api/editBook.php',
+		{
+			book_id: book_id,
+      book_title: book_title,
+      author: author,
+      edition: edition,
+      publisher: publisher,
+      isbn: isbn
+		},
+		function(response, statusTxt, xhr)
+		{
+			response = JSON.parse(response);
+      event.preventDefault();
+
+      if(response.status)
+      {
+        getBooks();
+
+        // Hides the popup dialog
+        $('#edit_book_modal').modal('hide');
+      }
+      else
+        throwError(response.message);
+    });
+  });
+
+  // Watches for submission of the new book form
+  $("#new_book_form").submit(function(event)
+	{
+    event.preventDefault();
+
+    // Gets the value of the inputs
+    var order_id = document.getElementById("new_book_order_id").value;
+    var book_title = document.getElementById("new_book_title").value;
+    var author = document.getElementById("new_author").value;
+    var edition = document.getElementById("new_edition").value;
+    var publisher = document.getElementById("new_publisher").value;
+    var isbn = document.getElementById("new_isbn").value;
+
+    $.post('/api/createBook.php',
+		{
+			order_id: order_id,
+      book_title: book_title,
+      author: author,
+      edition: edition,
+      publisher: publisher,
+      isbn: isbn
+		},
+		function(response, statusTxt, xhr)
+		{
+			response = JSON.parse(response);
+      event.preventDefault();
+
+      if(response.status)
+      {
+        getBooks();
+
+        // Hides the popup dialog
+        $('#new_book_modal').modal('hide');
+      }
+      else
+        throwError(response.message);
+    });
+  });
+
+  // Shows the add new book dialog
+  function displayAddBookDialog()
+  {
+    $("#new_book_modal").modal("show");
+  }
+
+  // Shows the edit book dialog
+  function display_edit_dialog(book_id, book_title, author, edition, publisher, isbn)
+  {
+    // Updates the Edit dialog header
+    $("#book_title_display").html(book_title);
+
+    // Changes the value of the edit form
+    document.getElementById("book_id").value = book_id;
+    document.getElementById("book_title").value = book_title;
+    document.getElementById("author").value = author;
+    document.getElementById("edition").value = edition;
+    document.getElementById("publisher").value = publisher;
+    document.getElementById("isbn").value = isbn;
+
+    // Shows the popup dialog
     $('#edit_book_modal').modal('show');
   }
 
+  // Delete a book by the given id
   function delete_book(book_id)
   {
+    // Ajax call to delete a book
+    // Method: POST
+    $.post('/api/deleteBook.php',
+		{
+			book_id: book_id
+		},
+		function(response, statusTxt, xhr)
+		{
+			response = JSON.parse(response);
 
+      // Success
+      if(response.status)
+      {
+        getBooks();
+      }
+      // An error occured
+      else
+        throwError(response.message);
+    });
   }
+
+  // Displays the indicated error message.
+	function throwError(error_message)
+	{
+		Swal.fire({
+			title: 'An Error Exists',
+			text: error_message,
+			icon: 'error',
+			allowOutsideClick: true,
+			allowEscapeKey: true,
+			confirmButtonText: 'Okay'
+		})
+	}
   </script>
 </body>
 </html>
