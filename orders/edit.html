@@ -222,9 +222,12 @@
     // Empty out the book container
     $("#book_container").html('');
 
+
     // Changes the value of the edit form
     document.getElementById("new_book_order_id").value = order_id;
 
+
+      
     // Ajax call to get all of a user's books.
     // Method: POST
     $.ajax({
@@ -239,7 +242,22 @@
         response = JSON.parse(response);
         console.log(response);
 
-        if(response.status)
+        //no books added to the order yet
+        if (undefined === response.orders)
+        {
+
+          //window.alert("Empty Array returned");
+          $("#book_container").append('\
+          <div class="col-md-4">\
+            <div class="card order_card">\
+              <div class="card-header">Add Another Book?</div>\
+              <div class="card-body">\
+                <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+              </div>\
+            </div>\
+          </div>');
+        }
+        else if(response.status)
         {
           const orderArray = response.orders;
 
