@@ -109,7 +109,59 @@
         response = JSON.parse(response);
         console.log(response);
 
-        if(response.status)
+        //no books added to the order yet
+        if (undefined === response.orders)
+        {
+
+          $.ajax({
+            url: "/api/load_order_and_course.php",
+            type: "GET",
+            data: {
+              order_id: order_id
+            },
+            success: function(response, statusTxt, xhr)
+            {
+              response = JSON.parse(response);
+              console.log(response);
+              if (response.status)
+              {
+                const orderArray = response.orders;
+
+                $("#course_name").html(orderArray[0].course_name);
+                $("#course_code").html(orderArray[0].course_code);
+                $("#order_id").html(orderArray[0].order_id);
+              }
+
+            },
+            error: function(response, statusTxt, xhr)
+            {
+              throwError("An error occured.");
+              $("#order_container").append('\
+              <div class="col-md-4">\
+                <div class="card order_card">\
+                <div class="card-header">Add Another Book?</div>\
+                  <div class="card-body">\
+                    <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+                    </div>\
+                    </div>\
+                    </div>');
+                }
+            });
+
+          //window.alert("Empty Array returned");
+
+
+          $("#book_container").append('\
+          <div class="col-md-4">\
+            <div class="card order_card">\
+              <div class="card-header">Add Another Book?</div>\
+              <div class="card-body">\
+                <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+              </div>\
+            </div>\
+          </div>');
+        }
+        else if(response.status)
         {
           const orderArray = response.orders;
 
@@ -117,12 +169,15 @@
           $("#course_code").html(orderArray[0].course_code);
           $("#order_id").html(orderArray[0].order_id);
 
+
           for(var i = 0; i < orderArray.length; i++)
           {
             $("#order_container").append('\
             <div class="col-md-4">\
               <div class="card order_card" id="'+ orderArray[i].book_id +'">\
-                <div class="card-header">'+ orderArray[i].book_title +'</div>\
+                <div class="card-header">\
+                  <span class="float-left">'+ orderArray[i].book_title +'</span>\
+                </div>\
                 <div class="card-body">\
                   <p class="card-text">'+ orderArray[i].author +'</p>\
                   <p class="card-text">Edition: '+ orderArray[i].edition +'</p>\
@@ -132,15 +187,31 @@
               </div>\
             </div>');
           }
+
+          $("#order_container").append('\
+          <div class="col-md-4">\
+            <div class="card order_card">\
+              <div class="card-header">Add Another Book?</div>\
+              <div class="card-body">\
+                <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+              </div>\
+            </div>\
+          </div>');
         }
 
         else
-          $("#order_container").html(response.message);
-      },
-
-      error: function(response, statusTxt, xhr)
-      {
-        $("#order_container").html("An error occured");
+        {
+          throwError(response.message);
+          $("#order_container").append('\
+          <div class="col-md-4">\
+            <div class="card order_card">\
+              <div class="card-header">Add Another Book?</div>\
+              <div class="card-body">\
+                <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+              </div>\
+            </div>\
+          </div>');
+        }
       }
     });
   }
