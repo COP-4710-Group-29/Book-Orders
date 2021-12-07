@@ -56,7 +56,38 @@
         response = JSON.parse(response);
         console.log(response);
 
-        if(response.status)
+        //no books added to the order yet
+        if (undefined === response.orders)
+        {
+          $.ajax({
+            url: "/api/load_order_and_course.php",
+            type: "GET",
+            data: {
+              order_id: order_id
+            },
+            success: function(response, statusTxt, xhr)
+            {
+              response = JSON.parse(response);
+              console.log(response);
+              if (response.status)
+              {
+                const orderArray = response.orders;
+
+                $("#course_name").html(orderArray[0].course_name);
+                $("#course_code").html(orderArray[0].course_code);
+                $("#order_id").html(orderArray[0].order_id);
+                window.print();
+              }
+
+            },
+            error: function(response, statusTxt, xhr)
+            {
+              $("#order_container").html("An error occured");
+              window.print();
+            }
+          });
+        }
+        else if(response.status)
         {
           const orderArray = response.orders;
 
@@ -81,11 +112,6 @@
 
         else
           $("#order_container").html(response.message);
-      },
-
-      error: function(response, statusTxt, xhr)
-      {
-        $("#order_container").html("An error occured");
       }
     });
   }

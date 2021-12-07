@@ -59,28 +59,11 @@
         <h5 id="course_name"></h5>
         <h5>Order number: <span id="order_id"></span></h5>
         <p class="card-text">Status: <span class="badge badge-info">Recieved</span><h6 id="deleteOrderButton"></h6></p>
-        
+
 
         <hr>
 
         <div class="row" id="book_container"></div>
-          <!--<div class="col-md-4">
-            <div class="card order_card">
-              <div class="card-header">
-                <span class="float-left" id="book_title"></span>
-                <span class="float-right">
-                  <a onclick="edit_book(book_id)" style="margin: 0px 4px;" class='fas fa-pen'></a>
-                  <a onclick="delete_book(book_id)" style="margin: 0px 4px;" class='fas fa-trash'></a>
-                </span>
-              </div>
-              <div class="card-body">
-                <p class="card-text">author goes here</p>
-                <p class="card-text">Edition: edition goes here</p>
-                <p class="card-text">Publisher: publisher goes here</p>
-                <p class="card-text">ISBN: isbn goes here</p>
-              </div>
-            </div>
-          </div>-->
       </div>
 
     </div>
@@ -223,7 +206,7 @@
     const urlParams = new URLSearchParams(queryString);
     const order_id = urlParams.get('order_id');
 
-    
+
     $("#deleteOrderButton").append('\
     <span>Delete Order <a onclick="delete_orders_books(\''+ order_id +'\')" style="margin: 0px 4px;" class="fas fa-trash"></a></span>');
     
@@ -243,8 +226,9 @@
 
     // Changes the value of the edit form
     document.getElementById("new_book_order_id").value = order_id;
-    
-    
+
+    //creates the delete button for deleting the order
+
 
 
     // Ajax call to get all of a user's books.
@@ -301,8 +285,8 @@
                 });
 
           //window.alert("Empty Array returned");
-                
-          
+
+
           $("#book_container").append('\
           <div class="col-md-4">\
             <div class="card order_card">\
@@ -542,7 +526,7 @@
       // Success
       if(response.status)
       {
-        
+
       }
       // An error occured
       else
