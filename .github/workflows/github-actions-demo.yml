@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: Check For Conflicts
 on: [push]
 jobs:
   Explore-GitHub-Actions:
