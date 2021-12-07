@@ -136,30 +136,10 @@
             error: function(response, statusTxt, xhr)
             {
               throwError("An error occured.");
-              $("#order_container").append('\
-              <div class="col-md-4">\
-                <div class="card order_card">\
-                <div class="card-header">Add Another Book?</div>\
-                  <div class="card-body">\
-                    <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
-                    </div>\
-                    </div>\
-                    </div>');
-                }
-            });
+            }
+          });
 
           //window.alert("Empty Array returned");
-
-
-          $("#book_container").append('\
-          <div class="col-md-4">\
-            <div class="card order_card">\
-              <div class="card-header">Add Another Book?</div>\
-              <div class="card-body">\
-                <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
-              </div>\
-            </div>\
-          </div>');
         }
         else if(response.status)
         {
@@ -187,30 +167,11 @@
               </div>\
             </div>');
           }
-
-          $("#order_container").append('\
-          <div class="col-md-4">\
-            <div class="card order_card">\
-              <div class="card-header">Add Another Book?</div>\
-              <div class="card-body">\
-                <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
-              </div>\
-            </div>\
-          </div>');
         }
 
         else
         {
           throwError(response.message);
-          $("#order_container").append('\
-          <div class="col-md-4">\
-            <div class="card order_card">\
-              <div class="card-header">Add Another Book?</div>\
-              <div class="card-body">\
-                <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
-              </div>\
-            </div>\
-          </div>');
         }
       }
     });
