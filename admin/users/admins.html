@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-  <title>Admin Dashboard</title>
+  <title>Admins</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,7 +26,7 @@
 
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" href="/admin/dashboard">Dashboard</a>
         </li>
         <li class="nav-item">
@@ -56,25 +56,34 @@
   </nav>
 
   <div style="padding-top: 50px; padding-bottom: 50px;" class="container-fluid">
-    <div class="row justify-content-center">
-      <div class="col-sm-1"></div>
-      <div class="col-md-7">
-        <h3>Quick Actions</h3>
-
-        <ul class="list-group">
-          <li class="list-group-item"><a href="javascript:void(0)" onclick="sendReminderEmail()">Send Reminder Email to All Users</a></li>
-          <li class="list-group-item"><a href="/admin/deadline">Update Deadline</a></li>
-          <li class="list-group-item"><a href="/admin/users/invite">Invite a User</a></li>
-          <li class="list-group-item"><a href="/admin/users/admins">View Admins</a></li>
-          <li class="list-group-item"><a href="/admin/users/new_admin">Create a New Admin</a></li>
-        </ul>
+      <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-md-9">
+          <h3>Users</h3>
+        </div>
+        <div class="col-md-2">
+          <div class="justify-content-center">
+            <a href="/admin/users/new_admin" class="btn btn-primary">Create a New Admin</a>
+          </div>
+        </div>
       </div>
 
-      <div class="col-md-4"></div>
-    </div>
-
-    <div class="row justify-content-center">
-      <div class="col-md-12">
+      <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-10">
+          <div class="error_container"></div>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Admin ID</th>
+                <th>Email</th>
+                <th>View</th>
+              </tr>
+            </thead>
+            <tbody id="user_container"></tbody>
+          </table>
+        </div>
+        <div class="col-sm-1"></div>
       </div>
     </div>
   </div>
@@ -83,35 +92,62 @@
   $(document).ready(function()
   {
     redirecter();
+    loadUsers();
   });
 
-  function sendReminderEmail()
+  function loadUsers()
   {
-    $.post('/api/load_users.php',{},
+    $.post('/api/load_admins.php',{},
 		function(response, statusTxt, xhr)
 		{
+      console.log(response);
       response = JSON.parse(response);
 
       if(response.status)
       {
-        const userArray = response.professors;
+        // Empty table
+        $("#user_container").html('');
+
+        const userArray = response.admins;
         for(var i = 0; i < userArray.length; i++)
         {
-          $.post('/api/mail/remind_of_deadline.php',{
-            email: userArray[i].email
-          },
-      		function(response, statusTxt, xhr)
-      		{
-            response = JSON.parse(response);
-
-            if(response.status)
-            {}
-          });
+          $("#user_container").append('\
+          <tr>\
+            <td>'+ userArray[i].admin_id +'</td>\
+            <td>'+ userArray[i].email +'</td>\
+            <td><a onclick="delete_admin(\''+ userArray[i].admin_id +'\')" style="margin: 0px 4px;" class="fas fa-trash"></a></td>\
+          </tr>');
         }
       }
-    });
 
-    alert("Email sent!");
+      else
+        $("#error_container").html(response.message);
+    });
+  }
+
+  // Delete a admin by the given id
+  function delete_admin(admin_id)
+  {
+    // Ajax call to delete a admin
+    // Method: POST
+    $.post('/api/deleteAdmin.php',
+		{
+			admin_id: admin_id
+		},
+		function(response, statusTxt, xhr)
+		{
+      console.log(response);
+			response = JSON.parse(response);
+
+      // Success
+      if(response.status)
+      {
+        loadUsers();
+      }
+      // An error occured
+      else
+        throwError(response.message);
+    });
   }
 
   function redirecter()
