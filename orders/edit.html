@@ -205,6 +205,7 @@
   {
     redirecter();
     getBooks();
+    deleteButton();
   });
 
   function redirecter()
@@ -213,6 +214,21 @@
     if (uid_set == null)
       window.location.replace("/login");
   }
+
+
+
+  function deleteButton()
+  {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const order_id = urlParams.get('order_id');
+
+    
+    $("#deleteOrderButton").append('\
+    <span><a onclick="delete_orders_books(\''+ order_id +'\')" style="margin: 0px 4px;" class="fas fa-trash"></a></span>');
+    
+  }
+
 
   // Gets all books for a given order
   function getBooks()
@@ -227,17 +243,9 @@
 
     // Changes the value of the edit form
     document.getElementById("new_book_order_id").value = order_id;
-    //document.getElementById("deleteOrderButton").append('\
-    //  <span class="float-right">\
-    //      <a onclick="delete_order(\'' + order_id + '\')" style="margin: 0px 4px;" class="fas fa-trash"></a></span>');
-
-    //$('#deleteOrderButton').html("<span class=\"float-left\"><a onclick=\"delete_order(\'' + order_id + '\')\" style=\"margin: 0px 4px;\"class=\"fas fa-trash\"></a></span>");    
-
-    //document.getElementById("deleteOrderButton").append('\
-      //<span><a onclick="delete_order(\''+ order_id +'\')" style="margin: 0px 4px;" class="fas fa-trash"></a></span>');
     
-      $("#deleteOrderButton").append('\
-      <span><a onclick="delete_order(\''+ order_id +'\')" style="margin: 0px 4px;" class="fas fa-trash"></a></span>');
+    //creates the delete button for deleting the order
+    
 
 
 
@@ -507,6 +515,7 @@
   }
 
 
+
   // Delete and order by it's order_id
   function delete_order(order_id)
   {
@@ -518,12 +527,13 @@
     },
     function(response, statusTxt, xhr)
     {
+      console.log(response);
       response = JSON.parse(response);
 
       // Success
       if(response.status)
       {
-        window.location.replace("/orders/index.html");
+        
       }
       // An error occured
       else
@@ -531,7 +541,34 @@
     });
   }
 
+  // Delete the books associated with a given order_id
+  // upon success, this function calls delete_order function,
+  //then redirects back to dashboard
+  function delete_orders_books(order_id)
+  {
+    // Ajax call to delete a book
+    // Method: POST
+    $.post('/api/deleteBooksByOrder.php',
+    {
+      order_id: order_id
+    },
+    function(response, statusTxt, xhr)
+    {
+      console.log(response);
+      response = JSON.parse(response);
 
+      // Success
+      if(response.status)
+      {
+        delete_order(order_id);
+        window.location.replace("/orders/index.html");
+      }
+      // An error occured
+      else
+        throwError(response.message);
+    });
+
+  }
 
 
   // Displays the indicated error message.
