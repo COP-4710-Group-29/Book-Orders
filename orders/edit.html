@@ -55,7 +55,8 @@
   <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
     <div class="row">
       <div class="col-md-12">
-        <h3 id="course_code"></h3>
+        <h4 id="course_code"></h4>
+        <h5 id="course_name"></h5>
         <h5>Order number: <span id="order_id"></span></h5>
         <p class="card-text">Status: <span class="badge badge-info">Recieved</span></p>
 
@@ -225,8 +226,6 @@
 
     // Changes the value of the edit form
     document.getElementById("new_book_order_id").value = order_id;
-
-
       
     // Ajax call to get all of a user's books.
     // Method: POST
@@ -246,7 +245,44 @@
         if (undefined === response.orders)
         {
 
+          $.ajax({
+            url: "/api/load_order_and_course.php",
+            type: "GET",
+            data: {
+              order_id: order_id
+            },
+            success: function(response, statusTxt, xhr)
+            {
+              response = JSON.parse(response);
+              console.log(response);
+              if (response.status)
+              {
+                const orderArray = response.orders;
+
+                $("#course_name").html(orderArray[0].course_name);
+                $("#course_code").html(orderArray[0].course_code);
+                $("#order_id").html(orderArray[0].order_id);
+              }
+
+            },
+            error: function(response, statusTxt, xhr)
+            {
+            throwError("An error occured.");
+            $("#book_container").append('\
+            <div class="col-md-4">\
+              <div class="card order_card">\
+               <div class="card-header">Add Another Book?</div>\
+                 <div class="card-body">\
+                  <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+                </div>\
+               </div>\
+             </div>');
+                  }
+                });
+
           //window.alert("Empty Array returned");
+                
+          
           $("#book_container").append('\
           <div class="col-md-4">\
             <div class="card order_card">\
