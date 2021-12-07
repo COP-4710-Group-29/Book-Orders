@@ -58,7 +58,8 @@
         <h4 id="course_code"></h4>
         <h5 id="course_name"></h5>
         <h5>Order number: <span id="order_id"></span></h5>
-        <p class="card-text">Status: <span class="badge badge-info">Recieved</span></p>
+        <p class="card-text">Status: <span class="badge badge-info">Recieved</span><h6 id="deleteOrderButton"></h6></p>
+        
 
         <hr>
 
@@ -226,7 +227,20 @@
 
     // Changes the value of the edit form
     document.getElementById("new_book_order_id").value = order_id;
-      
+    //document.getElementById("deleteOrderButton").append('\
+    //  <span class="float-right">\
+    //      <a onclick="delete_order(\'' + order_id + '\')" style="margin: 0px 4px;" class="fas fa-trash"></a></span>');
+
+    //$('#deleteOrderButton').html("<span class=\"float-left\"><a onclick=\"delete_order(\'' + order_id + '\')\" style=\"margin: 0px 4px;\"class=\"fas fa-trash\"></a></span>");    
+
+    //document.getElementById("deleteOrderButton").append('\
+      //<span><a onclick="delete_order(\''+ order_id +'\')" style="margin: 0px 4px;" class="fas fa-trash"></a></span>');
+    
+      $("#deleteOrderButton").append('\
+      <span><a onclick="delete_order(\''+ order_id +'\')" style="margin: 0px 4px;" class="fas fa-trash"></a></span>');
+
+
+
     // Ajax call to get all of a user's books.
     // Method: POST
     $.ajax({
@@ -301,6 +315,7 @@
           $("#course_code").html(orderArray[0].course_code);
           $("#order_id").html(orderArray[0].order_id);
 
+
           for(var i = 0; i < orderArray.length; i++)
           {
             $("#book_container").append('\
@@ -367,7 +382,7 @@
 
   // Watches for submission of the edit form
   $("#edit_book_form").submit(function(event)
-	{
+  {
     event.preventDefault();
 
     // Gets the value of the inputs
@@ -379,17 +394,17 @@
     var isbn = document.getElementById("isbn").value;
 
     $.post('/api/editBook.php',
-		{
-			book_id: book_id,
+    {
+      book_id: book_id,
       book_title: book_title,
       author: author,
       edition: edition,
       publisher: publisher,
       isbn: isbn
-		},
-		function(response, statusTxt, xhr)
-		{
-			response = JSON.parse(response);
+    },
+    function(response, statusTxt, xhr)
+    {
+      response = JSON.parse(response);
       event.preventDefault();
 
       if(response.status)
@@ -406,7 +421,7 @@
 
   // Watches for submission of the new book form
   $("#new_book_form").submit(function(event)
-	{
+  {
     event.preventDefault();
 
     // Gets the value of the inputs
@@ -418,17 +433,17 @@
     var isbn = document.getElementById("new_isbn").value;
 
     $.post('/api/createBook.php',
-		{
-			order_id: order_id,
+    {
+      order_id: order_id,
       book_title: book_title,
       author: author,
       edition: edition,
       publisher: publisher,
       isbn: isbn
-		},
-		function(response, statusTxt, xhr)
-		{
-			response = JSON.parse(response);
+    },
+    function(response, statusTxt, xhr)
+    {
+      response = JSON.parse(response);
       event.preventDefault();
 
       if(response.status)
@@ -473,12 +488,12 @@
     // Ajax call to delete a book
     // Method: POST
     $.post('/api/deleteBook.php',
-		{
-			book_id: book_id
-		},
-		function(response, statusTxt, xhr)
-		{
-			response = JSON.parse(response);
+    {
+      book_id: book_id
+    },
+    function(response, statusTxt, xhr)
+    {
+      response = JSON.parse(response);
 
       // Success
       if(response.status)
@@ -491,18 +506,46 @@
     });
   }
 
+
+  // Delete and order by it's order_id
+  function delete_order(order_id)
+  {
+    // Ajax call to delete a book
+    // Method: POST
+    $.post('/api/deleteOrder.php',
+    {
+      order_id: order_id
+    },
+    function(response, statusTxt, xhr)
+    {
+      response = JSON.parse(response);
+
+      // Success
+      if(response.status)
+      {
+        window.location.replace("/orders/index.html");
+      }
+      // An error occured
+      else
+        throwError(response.message);
+    });
+  }
+
+
+
+
   // Displays the indicated error message.
-	function throwError(error_message)
-	{
-		Swal.fire({
-			title: 'An Error Exists',
-			text: error_message,
-			icon: 'error',
-			allowOutsideClick: true,
-			allowEscapeKey: true,
-			confirmButtonText: 'Okay'
-		})
-	}
+  function throwError(error_message)
+  {
+    Swal.fire({
+      title: 'An Error Exists',
+      text: error_message,
+      icon: 'error',
+      allowOutsideClick: true,
+      allowEscapeKey: true,
+      confirmButtonText: 'Okay'
+    })
+  }
   </script>
 </body>
 </html>
