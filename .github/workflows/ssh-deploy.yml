@@ -14,6 +14,7 @@ jobs:
         SOURCE: "/"
         REMOTE_HOST: ${{ secrets.bookstore.brpromedia.com }}
         REMOTE_USER: ${{ secrets.root }}
-        TARGET: "/var/www/html/"
+        REMOTE_TARGET: "/var/www/html/"
+        TARGET: ${{ secrets.REMOTE_TARGET }}
         EXCLUDE: "/dist/, /node_modules/"
 
