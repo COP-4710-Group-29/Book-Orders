@@ -15,23 +15,18 @@
 
 <body>
   <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
-    <h3 id="semester_name"></h3>
+    <h3>Order Report: <span id="semester_name"></span></h3>
     <hr>
     <div id="data_container"></div>
   </div>
 
   <script>
+
   generateOrder();
 
   function generateOrder()
   {
-    loadSemesterInfo();
     loadAllOrderData();
-  }
-
-  function loadSemesterInfo()
-  {
-    
   }
 
   function loadAllOrderData()
@@ -50,17 +45,28 @@
           <h5>'+ userArray[i].first_name +' '+ userArray[i].last_name +'</h5>\
           <div id="professor_container_'+userArray[i].professor_id+'"></div><hr>');
 
-          $.post('/api/load_user_orders.php',{
-            professor_id: userArray[i].professor_id
+          const queryString = window.location.search;
+          const urlParams = new URLSearchParams(queryString);
+          const semester_id = urlParams.get('semester_id');
+
+          $.post('/api/load_user_orders_by_semester.php',{
+            professor_id: userArray[i].professor_id,
+            semester_id: semester_id
           },
       		function(response, statusTxt, xhr)
       		{
             response = JSON.parse(response);
             console.log(response);
 
-            if(response.status)
+            // No orders created by a user
+            if (undefined === response.orders)
+            {}
+
+            else if(response.status)
             {
               const orderArray = response.orders;
+
+              $("#semester_name").html(orderArray[0].semester_name);
 
               for(var j = 0; j < orderArray.length; j++)
               {
@@ -80,7 +86,7 @@
                     </tr>\
                   </thead>\
                   <tbody id="order_table_'+orderArray[j].order_id+'"></tbody>\
-                </table>')
+                </table>');
 
                 $.ajax({
                   url: "/api/load_order_details.php",
@@ -93,7 +99,11 @@
                   {
                     response = JSON.parse(response);
 
-                    if(response.status)
+                    // No books added to an order
+                    if (undefined === response.orders)
+                    {}
+
+                    else if(response.status)
                     {
                       const bookArray = response.orders;
 
