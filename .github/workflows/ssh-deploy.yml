@@ -1,2 +1,18 @@
-name: SSH Deploy
-  uses: easingthemes/ssh-deploy@v2.2.11
+name: CI
+on: [push]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "Triggered SSH Deployment Job!"
+    - name: Deploy to Production server
+      uses: easingthemes/ssh-deploy@main
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.MJC6+D6K/MCwgCLFXCI/jnL33+WcuG8UoUOANAG5VZs }}
+        ARGS: "-rltgoDzvO"
+        SOURCE: "/"
+        REMOTE_HOST: ${{ secrets.bookstore.brpromedia.com }}
+        REMOTE_USER: ${{ secrets.root }}
+        TARGET: "/var/www/html/"
+        EXCLUDE: "/dist/, /node_modules/"
+
