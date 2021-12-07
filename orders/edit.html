@@ -231,7 +231,6 @@
 
 
 
-
     // Ajax call to get all of a user's books.
     // Method: POST
     $.ajax({
@@ -452,6 +451,17 @@
   // Shows the add new book dialog
   function displayAddBookDialog()
   {
+    //clears the input boxes
+    //$("#new_book_modal input[type='text']").value = "";
+
+    $("#new_book_form").trigger('reset');
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const order_id = urlParams.get('order_id');
+    document.getElementById("new_book_order_id").value = order_id;
+
+    //Actually does the showing
     $("#new_book_modal").modal("show");
   }
 
