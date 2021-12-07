@@ -69,23 +69,7 @@
 
         <hr>
 
-        <div class="row" id="course_container">
-
-          <!--<div class="col-md-4">
-            <div class="card order_card" id="(course_id)">
-              <div class="card-header">
-                <span class="float-left">(course_code)</span>
-                <span class="float-right">
-                  <a onclick="edit_course(course_id)" style="margin: 0px 4px;" class='fas fa-pen'></a>
-                  <a onclick="delete_course(course_id)" style="margin: 0px 4px;" class='fas fa-trash'></a>
-                </span>
-              </div>
-              <div class="card-body">
-                <p class="card-text">(semester_name)</p>
-              </div>
-            </div>
-          </div>-->
-        </div>
+        <div class="row" id="course_container"></div>
       </div>
 
     </div>
@@ -136,7 +120,50 @@
   $(document).ready(function()
   {
     redirecter();
+    getCourses();
   });
+
+  // Gets all courses for a given user
+  function getCourses()
+  {
+    var uid = sessionStorage.getItem("uid");
+
+    $.post('/api/load_user_courses.php',{
+      professor_id: uid
+    },
+		function(response, statusTxt, xhr)
+		{
+      console.log(response);
+			response = JSON.parse(response);
+
+      if(response.status)
+      {
+        const responseArray = response.courses;
+        for(var i = 0; i < responseArray.length; i++)
+        {
+          $("#course_container").append('\
+          <div class="col-md-4">\
+            <div class="card order_card" id="'+responseArray[i].course_id+'">\
+              <div class="card-header">\
+                <span class="float-left">'+responseArray[i].course_code+'</span>\
+                <span class="float-right">\
+                  <a onclick="display_edit_dialog(\''+responseArray[i].course_id+'\', \''+responseArray[i].course_code+'\', \''+responseArray[i].course_name+'\')" style="margin: 0px 4px;" class="fas fa-pen"></a>\
+                  <a onclick="delete_course(\''+responseArray[i].course_id+'\')" style="margin: 0px 4px;" class="fas fa-trash"></a>\
+                </span>\
+              </div>\
+              <div class="card-body">\
+                <p class="card-text">'+responseArray[i].semester_name+'</p>\
+              </div>\
+            </div>\
+          </div>\
+          ');
+        }
+      }
+
+      else
+        $("#course_container").html(response.message);
+    });
+  }
 
   function redirecter()
   {
@@ -145,11 +172,21 @@
       window.location.replace("/login");
   }
 
-  function edit_course(course_id)
+  // Edits a course
+  function display_edit_dialog(course_id, course_code, course_name)
   {
+    // Updates the Edit dialog header
+    $("#course_code_display").html(course_code);
+
+    // Changes the value of the edit form
+    document.getElementById("course_name").value = course_name;
+    document.getElementById("course_code").value = course_code;
+
+    // Shows the popup dialog
     $('#edit_course_modal').modal('show');
   }
 
+  // Delete a course by the given id
   function delete_course(course_id)
   {
 
