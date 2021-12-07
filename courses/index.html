@@ -78,6 +78,7 @@
   <div class="modal fade" id="edit_course_modal">
     <div class="modal-dialog">
       <div class="modal-content">
+
         <div class="modal-header">
           <h4 class="modal-title">Edit <span id="course_code_display"></span></h4>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -85,6 +86,9 @@
 
         <div class="modal-body">
           <form id="edit_course_form" role="form">
+
+             <input type="hidden" id="course_id" name="course_id">
+
             <div class="form-group row">
               <label for="course_name" class="col-md-4 col-form-label text-md-right">Name:</label>
               <div class="col-md-6">
@@ -100,9 +104,9 @@
             </div>
 
             <div class="form-group row">
-              <label for="isbn" class="col-md-4 col-form-label text-md-right">Semester:</label>
+              <label for="semester_id" class="col-md-4 col-form-label text-md-right">Semester:</label>
               <div class="col-md-6">
-                <select class="form-control" id="semester_id"></select>
+                <select class="form-control" id="semester_id" name="semester_id"></select>
               </div>
             </div>
 
@@ -121,6 +125,7 @@
   {
     redirecter();
     getCourses();
+    loadSemesters();
   });
 
   // Gets all courses for a given user
@@ -128,12 +133,16 @@
   {
     var uid = sessionStorage.getItem("uid");
 
+    // Empty out the course container
+    $("#course_container").html('');
+
+    // Ajax call to get all of a user's courses.
+    // Method: POST
     $.post('/api/load_user_courses.php',{
       professor_id: uid
     },
 		function(response, statusTxt, xhr)
 		{
-      console.log(response);
 			response = JSON.parse(response);
 
       if(response.status)
@@ -141,6 +150,7 @@
         const responseArray = response.courses;
         for(var i = 0; i < responseArray.length; i++)
         {
+          // Insert the data
           $("#course_container").append('\
           <div class="col-md-4">\
             <div class="card order_card" id="'+responseArray[i].course_id+'">\
@@ -152,16 +162,43 @@
                 </span>\
               </div>\
               <div class="card-body">\
+                <p class="card-text">'+responseArray[i].course_name+'</p>\
                 <p class="card-text">'+responseArray[i].semester_name+'</p>\
               </div>\
             </div>\
-          </div>\
-          ');
+          </div>');
         }
       }
 
       else
         $("#course_container").html(response.message);
+    });
+  }
+
+  // Load in a list of semesters
+  function loadSemesters()
+  {
+    // Make an ajax call to load the semesters
+    // Method: POST
+    $.post('/api/load_semesters.php',{},
+		function(response, statusTxt, xhr)
+		{
+      response = JSON.parse(response);
+
+      // Populate the semester field with semesters
+      if(response.status)
+      {
+        const semesterArray = response.semesters;
+
+        // Loop through the response array and insert to the dropdown input
+        for(var i = 0; i < semesterArray.length; i++)
+        {
+          $("#semester_id").append('<option value="'+ semesterArray[i].semester_id +'">'+ semesterArray[i].semester_name +'</option>');
+        }
+      }
+
+      else
+        $("#semester_container").html(response.message);
     });
   }
 
@@ -172,6 +209,41 @@
       window.location.replace("/login");
   }
 
+  // Watches for submission of the edit form
+  $("#edit_course_form").submit(function(event)
+	{
+    event.preventDefault();
+
+    // Gets the value of the inputs
+    var course_id = document.getElementById("course_id").value;
+    var course_name = document.getElementById("course_name").value;
+    var course_code = document.getElementById("course_code").value;
+    var semester_id = document.getElementById("semester_id").value;
+
+    $.post('/api/editCourse.php',
+		{
+			course_id: course_id,
+      course_name: course_name,
+      course_code: course_code,
+      semester_id: semester_id
+		},
+		function(response, statusTxt, xhr)
+		{
+			response = JSON.parse(response);
+      event.preventDefault();
+
+      if(response.status)
+      {
+        getCourses();
+
+        // Hides the popup dialog
+        $('#edit_course_modal').modal('hide');
+      }
+      else
+        throwError(response.message);
+    });
+  });
+
   // Edits a course
   function display_edit_dialog(course_id, course_code, course_name)
   {
@@ -179,6 +251,7 @@
     $("#course_code_display").html(course_code);
 
     // Changes the value of the edit form
+    document.getElementById("course_id").value = course_id;
     document.getElementById("course_name").value = course_name;
     document.getElementById("course_code").value = course_code;
 
@@ -189,8 +262,43 @@
   // Delete a course by the given id
   function delete_course(course_id)
   {
+    // Get professor_id
+    var uid = sessionStorage.getItem("uid");
 
+    // Ajax call to delete a course
+    // Method: POST
+    $.post('/api/deleteCourse.php',
+		{
+			course_id: course_id,
+      professor_id: uid
+		},
+		function(response, statusTxt, xhr)
+		{
+			response = JSON.parse(response);
+
+      // Success
+      if(response.status)
+      {
+        getCourses();
+      }
+      // An error occured
+      else
+        throwError(response.message);
+    });
   }
+
+  // Displays the indicated error message.
+	function throwError(error_message)
+	{
+		Swal.fire({
+			title: 'An Error Exists',
+			text: error_message,
+			icon: 'error',
+			allowOutsideClick: true,
+			allowEscapeKey: true,
+			confirmButtonText: 'Okay'
+		})
+	}
   </script>
 </body>
 </html>

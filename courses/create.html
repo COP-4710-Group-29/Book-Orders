@@ -78,7 +78,7 @@
           <div class="form-group row">
             <label for="semester_id" class="col-md-4 col-form-label text-md-right">Which Semester?</label>
             <div class="col-md-6">
-              <select class="form-control" id="semester_id"></select>
+              <select class="form-control" name="semester_id" id="semester_id"></select>
             </div>
           </div>
 
@@ -95,8 +95,8 @@
   <script>
   $(document).ready(function()
   {
-    loadSemesters();
     redirecter();
+    loadSemesters();
   });
 
   // Load in a list of semesters
@@ -122,6 +122,38 @@
     });
   }
 
+  // Watches for submission of the edit form
+  $("#create_course_form").submit(function(event)
+	{
+    event.preventDefault();
+
+    // Gets the professor id
+    var uid = sessionStorage.getItem("uid");
+
+    // Gets the value of the inputs
+    var semester_id = document.getElementById("semester_id").value;
+    var course_name = document.getElementById("course_name").value;
+    var course_code = document.getElementById("course_code").value;
+
+    $.post('/api/createCourse.php',
+		{
+      semester_id: semester_id,
+      professor_id: uid,
+      course_name: course_name,
+      course_code: course_code
+		},
+		function(response, statusTxt, xhr)
+		{
+      console.log(response);
+			response = JSON.parse(response);
+      event.preventDefault();
+
+      if(response.status)
+        window.location.replace("/courses/");
+      else
+        throwError(response.message);
+    });
+  });
 
   function redirecter()
   {
