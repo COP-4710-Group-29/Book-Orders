@@ -55,9 +55,11 @@
   <div style="padding-top: 50px; padding-bottom: 50px;" class="container">
     <div class="row">
       <div class="col-md-12">
-        <h3 id="course_code"></h3>
+        <h4 id="course_code"></h4>
+        <h5 id="course_name"></h5>
         <h5>Order number: <span id="order_id"></span></h5>
-        <p class="card-text">Status: <span class="badge badge-info">Recieved</span></p>
+        <p class="card-text">Status: <span class="badge badge-info">Recieved</span><h6 id="deleteOrderButton"></h6></p>
+        
 
         <hr>
 
@@ -203,6 +205,7 @@
   {
     redirecter();
     getBooks();
+    deleteButton();
   });
 
   function redirecter()
@@ -211,6 +214,21 @@
     if (uid_set == null)
       window.location.replace("/login");
   }
+
+
+
+  function deleteButton()
+  {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const order_id = urlParams.get('order_id');
+
+    
+    $("#deleteOrderButton").append('\
+    <span><a onclick="delete_orders_books(\''+ order_id +'\')" style="margin: 0px 4px;" class="fas fa-trash"></a></span>');
+    
+  }
+
 
   // Gets all books for a given order
   function getBooks()
@@ -222,8 +240,14 @@
     // Empty out the book container
     $("#book_container").html('');
 
+
     // Changes the value of the edit form
     document.getElementById("new_book_order_id").value = order_id;
+    
+    //creates the delete button for deleting the order
+    
+
+
 
     // Ajax call to get all of a user's books.
     // Method: POST
@@ -239,13 +263,66 @@
         response = JSON.parse(response);
         console.log(response);
 
-        if(response.status)
+        //no books added to the order yet
+        if (undefined === response.orders)
+        {
+
+          $.ajax({
+            url: "/api/load_order_and_course.php",
+            type: "GET",
+            data: {
+              order_id: order_id
+            },
+            success: function(response, statusTxt, xhr)
+            {
+              response = JSON.parse(response);
+              console.log(response);
+              if (response.status)
+              {
+                const orderArray = response.orders;
+
+                $("#course_name").html(orderArray[0].course_name);
+                $("#course_code").html(orderArray[0].course_code);
+                $("#order_id").html(orderArray[0].order_id);
+              }
+
+            },
+            error: function(response, statusTxt, xhr)
+            {
+            throwError("An error occured.");
+            $("#book_container").append('\
+            <div class="col-md-4">\
+              <div class="card order_card">\
+               <div class="card-header">Add Another Book?</div>\
+                 <div class="card-body">\
+                  <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+                </div>\
+               </div>\
+             </div>');
+                  }
+                });
+
+          //window.alert("Empty Array returned");
+                
+          
+          $("#book_container").append('\
+          <div class="col-md-4">\
+            <div class="card order_card">\
+              <div class="card-header">Add Another Book?</div>\
+              <div class="card-body">\
+                <a onclick="displayAddBookDialog()" class="btn btn-primary">Add a new book</a>\
+              </div>\
+            </div>\
+          </div>');
+        }
+        else if(response.status)
         {
           const orderArray = response.orders;
 
           $("#course_name").html(orderArray[0].course_name);
           $("#course_code").html(orderArray[0].course_code);
           $("#order_id").html(orderArray[0].order_id);
+
 
           for(var i = 0; i < orderArray.length; i++)
           {
@@ -313,7 +390,7 @@
 
   // Watches for submission of the edit form
   $("#edit_book_form").submit(function(event)
-	{
+  {
     event.preventDefault();
 
     // Gets the value of the inputs
@@ -325,17 +402,17 @@
     var isbn = document.getElementById("isbn").value;
 
     $.post('/api/editBook.php',
-		{
-			book_id: book_id,
+    {
+      book_id: book_id,
       book_title: book_title,
       author: author,
       edition: edition,
       publisher: publisher,
       isbn: isbn
-		},
-		function(response, statusTxt, xhr)
-		{
-			response = JSON.parse(response);
+    },
+    function(response, statusTxt, xhr)
+    {
+      response = JSON.parse(response);
       event.preventDefault();
 
       if(response.status)
@@ -352,7 +429,7 @@
 
   // Watches for submission of the new book form
   $("#new_book_form").submit(function(event)
-	{
+  {
     event.preventDefault();
 
     // Gets the value of the inputs
@@ -364,17 +441,17 @@
     var isbn = document.getElementById("new_isbn").value;
 
     $.post('/api/createBook.php',
-		{
-			order_id: order_id,
+    {
+      order_id: order_id,
       book_title: book_title,
       author: author,
       edition: edition,
       publisher: publisher,
       isbn: isbn
-		},
-		function(response, statusTxt, xhr)
-		{
-			response = JSON.parse(response);
+    },
+    function(response, statusTxt, xhr)
+    {
+      response = JSON.parse(response);
       event.preventDefault();
 
       if(response.status)
@@ -419,12 +496,12 @@
     // Ajax call to delete a book
     // Method: POST
     $.post('/api/deleteBook.php',
-		{
-			book_id: book_id
-		},
-		function(response, statusTxt, xhr)
-		{
-			response = JSON.parse(response);
+    {
+      book_id: book_id
+    },
+    function(response, statusTxt, xhr)
+    {
+      response = JSON.parse(response);
 
       // Success
       if(response.status)
@@ -437,18 +514,75 @@
     });
   }
 
+
+
+  // Delete and order by it's order_id
+  function delete_order(order_id)
+  {
+    // Ajax call to delete a book
+    // Method: POST
+    $.post('/api/deleteOrder.php',
+    {
+      order_id: order_id
+    },
+    function(response, statusTxt, xhr)
+    {
+      console.log(response);
+      response = JSON.parse(response);
+
+      // Success
+      if(response.status)
+      {
+        
+      }
+      // An error occured
+      else
+        throwError(response.message);
+    });
+  }
+
+  // Delete the books associated with a given order_id
+  // upon success, this function calls delete_order function,
+  //then redirects back to dashboard
+  function delete_orders_books(order_id)
+  {
+    // Ajax call to delete a book
+    // Method: POST
+    $.post('/api/deleteBooksByOrder.php',
+    {
+      order_id: order_id
+    },
+    function(response, statusTxt, xhr)
+    {
+      console.log(response);
+      response = JSON.parse(response);
+
+      // Success
+      if(response.status)
+      {
+        delete_order(order_id);
+        window.location.replace("/orders/index.html");
+      }
+      // An error occured
+      else
+        throwError(response.message);
+    });
+
+  }
+
+
   // Displays the indicated error message.
-	function throwError(error_message)
-	{
-		Swal.fire({
-			title: 'An Error Exists',
-			text: error_message,
-			icon: 'error',
-			allowOutsideClick: true,
-			allowEscapeKey: true,
-			confirmButtonText: 'Okay'
-		})
-	}
+  function throwError(error_message)
+  {
+    Swal.fire({
+      title: 'An Error Exists',
+      text: error_message,
+      icon: 'error',
+      allowOutsideClick: true,
+      allowEscapeKey: true,
+      confirmButtonText: 'Okay'
+    })
+  }
   </script>
 </body>
 </html>
