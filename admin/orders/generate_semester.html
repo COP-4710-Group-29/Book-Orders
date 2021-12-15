@@ -100,14 +100,11 @@
                     response = JSON.parse(response);
 
                     // No books added to an order
-                    if (undefined === response.orders)
-                    {}
-
-                    else if(response.status)
+                    if(response.status)
                     {
                       const bookArray = response.orders;
 
-                      for(var x = 0; x < orderArray.length; x++)
+                      for(var x = 0; x < bookArray.length; x++)
                       {
                         $("#order_table_"+bookArray[x].order_id).append('\
                         <tr>\
